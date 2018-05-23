@@ -8,6 +8,7 @@ Functions that verify that I get the same results as the previous work. (Sanity 
 Functions for behavioral analysis
 - plot_epochs
   - What it does
+  
   Plot what kind of events there were during 20 seconds before the probes. The trials go from left to right, top to bottom.
   (The figure generated contains 64 probes and it generates this for each participant)
   - Legend
