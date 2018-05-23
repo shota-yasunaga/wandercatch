@@ -6,7 +6,21 @@ Functions that verify that I get the same results as the previous work. (Sanity 
 
 # Behavior
 Functions for behavioral analysis
-- 
+- plot_epochs
+  - What it does
+  Plot what kind of events there were during 20 seconds before the probes. The trials go from left to right, top to bottom.
+  (The figure generated contains 64 probes and it generates this for each participant)
+  - Legend
+    - The plot Background 
+        - White  ... On Task
+        - Yellow ... Mind Wandering
+        - Blue   ... Mind Blanking
+        - Grey   ... Didn't remember
+    - The events 
+        - Green ... Trial End
+        - Red   ... Questions
+        - Blue  ... Trial Start
+        - Black ... Others
 
 
 # Behavioral Data
