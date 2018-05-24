@@ -61,7 +61,7 @@ all = [on_task;wander;blank;not_remember];
 % Comment out unnessesary stuff
 %
 % In general, 
-% Blue:on task,Red:mind wandering,Yellow:mind blanking,Purple:not remember
+% blue -> on task, red -> mind wandering, yellow -> mind blanking, pur
 
 f = ppt_whole(all,NUM_PPT) % PPT sum across trials (whole)
 

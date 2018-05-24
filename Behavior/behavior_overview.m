@@ -21,9 +21,9 @@ file_dir = '/Users/macbookpro/Dropbox/College/TsuchiyaLab/Behavior_Data';
 % Directory where you want to save the figure
 % saving_dir = '/Users/macbookpro/Dropbox/College/TsuchiyaLab/Plots';
 
-%%%%%%%%%%%%%%%%%%%%%
-% End of Editting   %
-%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%
+% End of Editting  %
+%%%%%%%%%%%%%%%%%%%%
 
 files = dir(file_dir);
 files=files(~ismember({files.name},{'.','..'}));
