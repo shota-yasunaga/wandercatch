@@ -46,17 +46,15 @@ addpath(func_dir)
 labelMat = getLabelSequence(file_dir, NUM_PROBES);
 % (1)On-Task (2) Mind Wandeing (3) Blank (4) Don''t Remember
 
-% % Plotting the whole 
-% transMat = ppt_transition(labelMat);
-% f = ppt_transition_plot(transMat);
-% 
-% % Plotting transition probability
-% transMat = transMat./sum(transMat,2);
-% transMat(isnan(transMat)) = 0
-% f = ppt_transition_plot(transMat);
+% Plotting the whole 
+transMat = ppt_transition(labelMat);
+f = ppt_transition_plot(transMat);
 
-% Plot the transition arross time
-f = ppt_transition_quarter_plot(labelMat);
+% Plotting transition probability
+transMat = transMat./sum(transMat,2);
+transMat(isnan(transMat)) = 0
+f = ppt_transition_plot(transMat);
+
 
 function f = ppt_transition_plot(transMat)
     NUM_PPT = size(transMat,3);
@@ -83,14 +81,8 @@ function f = ppt_transition_quarter_plot(labelMat)
     %TODO: fix it
     QUARTER = size(labelMat,2)/4;
     for i = 1:4
-        if i ==4
-            label_quarter = labelMat(:,1+QUARTER*(i-1):end);
-        else
-            label_quarter = labelMat(:,1+QUARTER*(i-1):QUARTER*i+1);
-        end
-        transMat=ppt_transition(label_quarter);
-        f = ppt_transition_plot(transMat);
-        set(f,'Name',sprintf('%d/4',i),'Numbertitle','off');
+        transMat = labelMat(1+QUARTER(i-1):QUARTER*i+1,:);
+        f = pp
     end
 end
 

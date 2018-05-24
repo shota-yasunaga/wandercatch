@@ -120,9 +120,6 @@ function f = time_whole(on_task,wander,blank,not_remember,NUM_PROBES)
 end
 
 
-
-
-
 %%%%%%%%%%%%%%%%%%%%%%
 %% Helper Functions %%
 %%%%%%%%%%%%%%%%%%%%%%
