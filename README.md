@@ -1,14 +1,18 @@
 # wanderlust
 Wanderlust project (analyses functions)
 
-# Review
-Functions that verify that I get the same results as the previous work. (Sanity check). 
+# Meta Information
+Main Editor: Shota Yasunaga
+Email      : shotayasunaga1996@gmail.com
+Institution: Monash University  (research conducted)
+             Pitzer College     (home institute of Shota)
+Last Modified (Look at the commit history for now)
 
 # Behavior
 Functions for behavioral analysis
-- plot_epochs
+- behavior_overview
   - What it does
-  
+
   Plot what kind of events there were during 20 seconds before the probes. The trials go from left to right, top to bottom.
   (The figure generated contains 64 probes and it generates this for each participant)
   - Legend
@@ -22,6 +26,14 @@ Functions for behavioral analysis
         - Red   ... Questions
         - Blue  ... Trial Start
         - Black ... Others
+
+- transition_analysis
+    
+    Plots how the state (On task, Mind Wandering etc) transitioned. 
+- behavior_analysis_ratio
+
+    Plots information related how much of probes were "on task", "mind wandering", etc. 
+
 
 
 # Behavioral Data
