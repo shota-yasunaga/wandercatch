@@ -63,11 +63,13 @@ all = [on_task;wander;blank;not_remember];
 % In general, 
 % Blue:on task,Red:mind wandering,Yellow:mind blanking,Purple:not remember
 
-f = ppt_whole(all,NUM_PPT) % PPT sum across trials (whole)
+% f = ppt_whole(all,NUM_PPT) % PPT sum across trials (whole)
+% 
+% f = ppt_quarter(all,NUM_PPT,NUM_PROBES) %  PPT sum across trials (quarter)
+% 
+% f = time_whole(on_task,wander,blank,not_remember,NUM_PROBES) % across time
 
-f = ppt_quarter(all,NUM_PPT,NUM_PROBES) %  PPT sum across trials (quarter)
 
-f = time_whole(on_task,wander,blank,not_remember,NUM_PROBES) % across time
 
 
 %% 
@@ -118,6 +120,9 @@ function f = time_whole(on_task,wander,blank,not_remember,NUM_PROBES)
 end
 
 
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%
 %% Helper Functions %%
 %%%%%%%%%%%%%%%%%%%%%%
@@ -146,4 +151,5 @@ scatter(linspace(0.55,1.45,num_ppt),blank_local,'filled');
 scatter(linspace(1.55,2.45,num_ppt),not_remember_local','filled');
 
 end
+
 

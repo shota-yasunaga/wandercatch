@@ -61,13 +61,15 @@ all = [on_task;wander;blank;not_remember];
 % Comment out unnessesary stuff
 %
 % In general, 
-% blue -> on task, red -> mind wandering, yellow -> mind blanking, pur
+% Blue:on task,Red:mind wandering,Yellow:mind blanking,Purple:not remember
 
-f = ppt_whole(all,NUM_PPT) % PPT sum across trials (whole)
+% f = ppt_whole(all,NUM_PPT) % PPT sum across trials (whole)
+% 
+% f = ppt_quarter(all,NUM_PPT,NUM_PROBES) %  PPT sum across trials (quarter)
+% 
+% f = time_whole(on_task,wander,blank,not_remember,NUM_PROBES) % across time
 
-f = ppt_quarter(all,NUM_PPT,NUM_PROBES) %  PPT sum across trials (quarter)
-
-f = time_whole(on_task,wander,blank,not_remember,NUM_PROBES) % across time
+f = ppt_transition_plot(labelMat)
 
 
 %% 
@@ -118,6 +120,21 @@ function f = time_whole(on_task,wander,blank,not_remember,NUM_PROBES)
 end
 
 
+function f = ppt_transition_plot(labelMat)
+    transMat = ppt_transition(labelMat);
+    NUM_PPT = size(labelMat,1);
+    plot_length = ceil(sqrt(NUM_PPT));
+    f = figure();
+    for i = 1:NUM_PPT
+        subplot(plot_length,plot_length,i)
+        g = digraph(transMat(:,:,i));
+        LWidth = 5*g.Edges.Weight/max(g.Edges.Weight);
+        plot(g,'EdgeLabel',g.Edges.Weight,'LineWidth',LWidth, 'Layout','circle','MarkerSize',10,'NodeColor','red')
+        title(sprintf('Participant %d',i))
+    end
+end
+
+
 %%%%%%%%%%%%%%%%%%%%%%
 %% Helper Functions %%
 %%%%%%%%%%%%%%%%%%%%%%
@@ -145,5 +162,26 @@ scatter(linspace(-0.45,0.45,num_ppt),wander_local','filled');
 scatter(linspace(0.55,1.45,num_ppt),blank_local,'filled');
 scatter(linspace(1.55,2.45,num_ppt),not_remember_local','filled');
 
+end
+
+%% Markov Chain ish
+% The transition probability for each ppt
+% Assuming there are 4 sates
+function transMat = ppt_transition(labelMat)
+    NUM_PPT = size(labelMat,1);
+    transMat = zeros(4,4,NUM_PPT);
+    for ppt = 1:NUM_PPT
+        disp(ppt)
+        ppt_mat = labelMat(ppt,:); 
+        ppt_mat = ppt_mat(not(isnan(ppt_mat))); % removing NaN
+        ppt_trans = zeros(4,4); %4 ... states
+        NUM_PROBES = length(ppt_mat);
+        for i = 1:NUM_PROBES-1
+            ppt_trans(ppt_mat(i),ppt_mat(i+1)) = ppt_trans(ppt_mat(i),ppt_mat(i+1)) + 1;
+        end
+        ppt_trans = ppt_trans/NUM_PROBES;
+        transMat(:,:,ppt) = ppt_trans;
+    end
+    
 end
 
