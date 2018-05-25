@@ -26,3 +26,81 @@ files = dir(file_dir);
 files=files(~ismember({files.name},{'.','..'}));
 
 cd(file_dir)
+
+load(files(1).name)
+
+verbal = all_task_times(all_task_times(:,7) == 1, :);
+chuncked = chunk_questions(verbal,4,[16 18], [17,19]);
+
+disp(size(chuncked))
+
+chuncked = delete_nan_row(chuncked);
+
+disp(size(chuncked))
+
+for ppt = 1:length(files)
+    
+end
+
+
+function verbal_analysis
+
+end
+
+function spatial_analysis
+end
+
+% function to get the matrix for only for verbal response time
+% row: probes
+% col: QAQAQAQA (Q = question, A = anser)
+
+% % % % function verbalMat = get_verbal_mat(all_task_times)
+% % % %     verbal_mask = all_task_times(:,7)==1;
+% % % %     all_task_times = all_task_times(verbal_mask,:);
+% % % %     
+% % % %     order_mask = ... % This is just the information where we should look for the values
+% % % %     for row = 1:4
+% % % %         for col = [16 18]
+% % % %             
+% % % %         end
+% % % %     end
+% % % %         
+% % % %     
+% % % % end
+% % % % 
+% % % % function spatialMat = get_spatial_mat()
+% % % % end
+
+
+function chunked = chunk_questions(all_task_times, rows, cols1,cols2)
+    % function to change the structure of the function
+    % currently, the data is quite hard to work with because of... you know
+    % this chunks questions/responses to one row with right oarder 
+    % poorly explained
+    % input
+    %   rows ... number of rows to iterate through with col1s
+    %   
+    % output
+
+    NUM_ROWS = size(all_task_times,1);
+    chunked = zeros(NUM_ROWS/rows,16); % ummmmm TODO: this is not genrailzed
+    for i = 1:NUM_ROWS/rows % should be devisible, otherwise, that's weird
+        row_num = 1+ rows*(i-1);% failure to declare variable names in a right way
+        n = 1;
+        for row = 0:rows-1
+            chunked(i,n:n+length(cols1)-1) =all_task_times(row_num+row,cols1);
+            n = n+length(cols1);
+        end
+        for row = 0:rows-1
+            chunked(i,n:n+length(cols2)-1) = all_task_times(row_num+row,cols2);
+            n = n+length(cols2);
+        end
+    end
+    
+end
+
+% function to delte the row that contains Nan
+function new_matrix = delete_nan_row(matrix)
+    valid_inds = sum(isnan(matrix),2) == 0; % Get the mask
+    new_matrix = matrix(valid_inds,:);
+end

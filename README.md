@@ -3,9 +3,13 @@ Wanderlust project (analyses functions)
 
 # Meta Information
 Main Editor: Shota Yasunaga
+
 Email      : shotayasunaga1996@gmail.com
+
 Institution: Monash University  (research conducted)
+
              Pitzer College     (home institute of Shota)
+
 Last Modified (Look at the commit history for now)
 
 # Behavior
@@ -39,7 +43,16 @@ Functions for behavioral analysis
 # Behavioral Data
 
 - all_task_responses
-1. 
+ 1. num_blocks
+ 2. num_trials
+ 3. doesn't_matter
+ 4. block_type ... 1: verbal task 2: spatial
+ 5. direction... 1 is right (forward),2 is lest(backward)
+ 6-9 ... right answer
+ 10-12... keyboard num (response)
+ 14-17... corrected response
+ 18-21... correctness-> NaN means there was probe
+    --> no response time
 
 
 - all_task_times
