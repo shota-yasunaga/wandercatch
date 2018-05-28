@@ -80,7 +80,7 @@ function chunked = chunk_questions(all_task_times, rows, cols1,cols2)
     % this chunks questions/responses to one row with right oarder 
     % poorly explained
     % input
-    %   rows ... number of rows to iterate through with col1s
+    %   rows ... number of; rows to iterate through with col1s
     %   
     % output
 

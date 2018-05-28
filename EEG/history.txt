@@ -1,1 +1,8 @@
-# Concerns 
+# Note of bad channels
+- S301
+
+-S312
+    TP10
+    T8 (16)
+    PO3(59 originally 61)
+    
