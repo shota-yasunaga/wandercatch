@@ -114,7 +114,7 @@ function f = ppt_transition_quarter_plot(labelMat,trans_func)
         else
             label_quarter = labelMat(:,1+QUARTER*(i-1):QUARTER*i+1);
         end
-        f = ppt_transition_plot(labelMat,trans_func);
+        f = ppt_transition_plot(label_quarter,trans_func);
         set(f,'Name',sprintf('%d/4',i),'Numbertitle','off');
     end
 end
