@@ -1,4 +1,4 @@
-% function to plot the relationshipt between trial time pins
+% Script to plot the relationshipt between trial time pins
 % and probe answers (epoched with probes) 
 % 
 % By Shota Yasunaga
