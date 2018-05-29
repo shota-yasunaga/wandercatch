@@ -56,6 +56,16 @@ for i = 1:length(files)
         EEG = pop_importdata('dataformat','array','nbchan',NUM_CHANNELS,'data','data',...
             'setname','test_var','srate',Fs,'pnts',0,'xmin',0,'chanlocs',...
             location_file_dir);
+        
+        % Fix the radius value 
+        % Please let me know if you find better way to do this
+        
+        for c = 1:NUM_CHANNELS
+            x = EEG.chanlocs(c).X;
+            y = EEG.chanlocs(c).Y;
+            EEG.chanlocs(c).radius = euclid_dist(x,y);
+        end
+        
         EEG = eeg_checkset( EEG );
 
         
@@ -70,7 +80,8 @@ function bool = isMat(str)
 end
 
     
-
-
+function dist = euclid_dist(x,y)
+    dist = sqrt(x^2+y^2);
+end
 
 
