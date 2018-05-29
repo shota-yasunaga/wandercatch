@@ -49,12 +49,12 @@ for i = 1:length(files)
     if isMat((files(i).name))
         file_name = files(i).name;
         name_wo_mat = file_name(1:end-4); 
-        disp(sprintf('Processing %s',char(file_name)))
+        fprintf('Processing %s',char(file_name))
         load(files(i).name)
         D.data.fname = sprintf('%s%c%s%s',file_dir,'/',name_wo_mat,'.dat');
         data = D.data(1:NUM_CHANNELS,:,:);
         EEG = pop_importdata('dataformat','array','nbchan',NUM_CHANNELS,'data','data',...
-            'setname','test_var','srate',Fs,'pnts',0,'xmin',0,'chanlocs',...
+            'setname',name_wo_mat,'srate',Fs,'pnts',0,'xmin',0,'chanlocs',...
             location_file_dir);
         
         % Fix the radius value 

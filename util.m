@@ -1,11 +1,14 @@
-function files = util(command,input1)
+function out = util(command,varargin)
     % hub for util functions. 
     % This is just to make it look nicer (otherwise, it get too messy with 
     % a lot of different files around)
+    % TODO: input number sanity check
     if strcmp(command,'getBehaviorFiles') 
-        files = getBehaviorFiles(input1);
+        out = getBehaviorFiles(varargin{1});
     elseif strcmp(command, 'getEEGFiles')
-        files = getEEGFiles(input1);
+        out = getEEGFiles(varargin{1});
+    elseif strcmp(command,'getProbeLabels')
+        out = getProbeLabels(varargin{1});
     else
         error('Function ''%s'' not defined',command)
     end
@@ -22,6 +25,10 @@ end
 function filenames = getEEGFiles(eeg_path)
     filenames = getFiles(eeg_path);
     filenames = filenames(contains(filenames,'.set'));
+end
+
+function labels = getProbeLabels(responses_var)
+    labels = responses_var(2:7:end,9);
 end
 
 %%

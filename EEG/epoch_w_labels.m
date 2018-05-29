@@ -10,7 +10,7 @@
 % pr... probe
 % tr.. trials
 
-
+clear
 %%%%%%%%%%%%%
 % Edit Here %
 %%%%%%%%%%%%%
@@ -28,6 +28,11 @@ eeg_dir      = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data';
 
 % file, util. Has to have util.m in it. 
 util_dir     = '/Users/macbookpro/Dropbox/College/TsuchiyaLab/wandercatch/';
+
+% path to save data
+on_dir   = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/On'; % On Task
+mb_dir   = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/MB'; % Mind Blanking
+mw_dir   = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/MW'; % Mind Wandering
 
 % Directory where you want to save the figure
 % saving_dir = '/Users/macbookpro/Dropbox/College/TsuchiyaLab/Plots';
@@ -47,6 +52,8 @@ partial_mode = true;
 %util
 addpath(util_dir)
 
+% eeglab (ver14.0.0 used, but other versions might work as well)
+
 %%
 %%%%%%%%%%
 % Script %
@@ -59,17 +66,46 @@ if length(behave_files) ~= length(eeg_files) && not(partial_mode)
     error('You need to have same number of files to run the script')
 end
 
-num_files = length(behave_files);
+num_files = length(eeg_files);
 
+eeglab
 for i = 1:num_files
+    % Just getting the right files 
     eeg_file  = eeg_files(i);
-    [~,name,~] = fileparts(char(eeg_file));
+    [folder,name,ext] = fileparts(char(eeg_file));
     [~,pat_num] = strtok(name,'S');
-    pat_num = sscanf('S%d',pat_num);
-    load(char(behave_files(i)))
-    eeg_file = ee
+    pat_num = sscanf(pat_num,'S%s'); % End with number please
+    pat_num = ['s' pat_num];
+    behave_file = char(behave_files(contains(behave_files,pat_num)));
+    
+    load(behave_file, 'all_probe_responses')
+    
+    labels = util('getProbeLabels',all_probe_responses);
+    
+    % eeglab
+    
+    EEG = pop_loadset('filename',[name ext],'filepath',folder);  
+    
+    on_inds = find(labels == 1);
+    mw_inds = find(labels == 2);
+    mb_inds = find(labels == 3);
+    select_with_inds(EEG,on_inds,'ON',name,on_dir);
+    select_with_inds(EEG,mw_inds,'WM',name,mw_dir);
+    select_with_inds(EEG,mb_inds,'MB',name,mb_dir);
+    
+    
 end
 
 function partial_correction
 
 end
+
+function EEG = select_with_inds(EEG, inds, label,name, saving_path)
+    if not(isempty(inds))
+        % to choose the trials and save to the right path
+        EEG = pop_select(EEG,'trial',inds);
+        EEG = eeg_checkset( EEG );
+        EEG = pop_saveset( EEG, 'filename',sprintf('%s%s',label,name),'filepath',saving_path); % Save the data
+    end
+end
+
