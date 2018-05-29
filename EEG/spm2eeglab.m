@@ -9,15 +9,15 @@ clear all
 % Edit Here %
 %%%%%%%%%%%%%
 % Edit here (if needed, including Constant)
-% Directory to the files
+% Directory to the spm files
 % *Do not put anything except the data 
-file_dir = '/Users/macbookpro/Downloads/drive-download-20180528T025919Z-001';
+spm_dir = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/Probes/spm';
 
 % Look at convert_location_mat2eeglab if you don't have one
 location_file_dir = ...
     '/Users/macbookpro/Dropbox/College/TsuchiyaLab/wandercatch/EEG/chan_loc.xyz';
 
-saving_path = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data';
+saving_path = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/Probes/eeglab';
 % Directory where you want to save the figure
 % saving_dir = '/Users/macbookpro/Dropbox/College/TsuchiyaLab/Plots';
 
@@ -38,10 +38,10 @@ Fs = 500;
 %%%%%%%%%%
 
 
-files = dir(file_dir);
+files = dir(spm_dir);
 files=files(~ismember({files.name},{'.','..'}));
 
-cd(file_dir)
+cd(spm_dir)
 
 eeglab
 
@@ -51,7 +51,7 @@ for i = 1:length(files)
         name_wo_mat = file_name(1:end-4); 
         fprintf('Processing %s',char(file_name))
         load(files(i).name)
-        D.data.fname = sprintf('%s%c%s%s',file_dir,'/',name_wo_mat,'.dat');
+        D.data.fname = sprintf('%s%c%s%s',spm_dir,'/',name_wo_mat,'.dat');
         data = D.data(1:NUM_CHANNELS,:,:);
         EEG = pop_importdata('dataformat','array','nbchan',NUM_CHANNELS,'data','data',...
             'setname',name_wo_mat,'srate',Fs,'pnts',0,'xmin',0,'chanlocs',...
@@ -63,7 +63,7 @@ for i = 1:length(files)
         for c = 1:NUM_CHANNELS
             x = EEG.chanlocs(c).X;
             y = EEG.chanlocs(c).Y;
-            EEG.chanlocs(c).radius = euclid_dist(x,y);
+            EEG.chanlocs(c).radius = euclid_dist(x,y)*0.50/0.660; %TODO
         end
         
         EEG = eeg_checkset( EEG );
