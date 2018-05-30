@@ -18,7 +18,7 @@ function out = util(command,varargin)
 end
 
 
-%%Ummm they are the same....
+%% Actual functions called by util
 function filenames = getBehaviorFiles(behavior_path)
     filenames = getFiles(behavior_path);
     filenames = filenames(contains(filenames,'.mat'));
@@ -46,6 +46,7 @@ end
 % Helper Function %
 %%%%%%%%%%%%%%%%%%%
 function filenames = getFiles(path)
+    % grabs all of the files from the path
     files = dir(path);
     filenames =cell(size(files));
     for i=1:length(files)

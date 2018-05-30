@@ -24,15 +24,15 @@ behavior_dir = '/Users/macbookpro/Dropbox/College/TsuchiyaLab/Behavior_Data';
 % The script is dependent of the fact taht you put S (capital) in front of
 % the number of participants
 % if you want to change it, you need to look at around "strtok"
-eeg_dir      = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data';
+eeg_dir      = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/Probes/eeglab';
 
 % file, util. Has to have util.m in it. 
 util_dir     = '/Users/macbookpro/Dropbox/College/TsuchiyaLab/wandercatch/';
 
 % path to save data
-on_dir   = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/On'; % On Task
-mb_dir   = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/MB'; % Mind Blanking
-mw_dir   = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/MW'; % Mind Wandering
+on_dir   = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/Probes/On'; % On Task
+mb_dir   = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/Probes/MB'; % Mind Blanking
+mw_dir   = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/Probes/MW'; % Mind Wandering
 
 % Directory where you want to save the figure
 % saving_dir = '/Users/macbookpro/Dropbox/College/TsuchiyaLab/Plots';
@@ -69,6 +69,11 @@ end
 num_files = length(eeg_files);
 
 eeglab
+
+names={num_files}
+num_on=[];
+num_mw=[];
+num_mb=[];
 for i = 1:num_files
     % Just getting the right files 
     eeg_file  = eeg_files(i);
@@ -78,21 +83,26 @@ for i = 1:num_files
     pat_num = ['s' pat_num];
     
     % Actually getting labels
-    behave_file = behave_files{contains(behave_files,pat_num)}; %MAybe wrong    
-    labels = util('getProbeLabels',behave_file);
+%     behave_file = behave_files{contains(behave_files,pat_num)}; %MAybe wrong    
+%     labels = util('getProbeLabels',behave_file);
     
     % eeglab
     
     EEG = pop_loadset('filename',[name ext],'filepath',folder);  
     
-    on_inds = find(labels == 1);
-    mw_inds = find(labels == 2);
-    mb_inds = find(labels == 3);
+    labels = getLabels(EEG);
+    names{i}=name;
+    on_inds = find(strcmp(labels,'On')); num_on(i) = length(on_inds);
+    mw_inds = find(strcmp(labels,'MW')); num_mw(i) = length(mw_inds);
+    mb_inds = find(strcmp(labels,'MB')); num_mb(i) = length(mb_inds);
     select_with_inds(EEG,on_inds,'ON',name,on_dir);
     select_with_inds(EEG,mw_inds,'WM',name,mw_dir);
     select_with_inds(EEG,mb_inds,'MB',name,mb_dir);
-    
 end
+disp(num_on)
+disp(num_mw)
+disp(num_mb)
+disp(names)
 
 function partial_correction
 
@@ -102,8 +112,15 @@ function EEG = select_with_inds(EEG, inds, label,name, saving_path)
     if not(isempty(inds))
         % to choose the trials and save to the right path
         EEG = pop_select(EEG,'trial',inds);
+        EEG.setname = label;
         EEG = eeg_checkset( EEG );
         EEG = pop_saveset( EEG, 'filename',sprintf('%s%s',label,name),'filepath',saving_path); % Save the data
     end
 end
 
+function labels = getLabels(EEG)
+    labels={};
+    for i = 1:length(EEG.epoch)
+        labels{i} = EEG.epoch(i).response;
+    end
+end
