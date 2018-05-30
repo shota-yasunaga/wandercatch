@@ -9,6 +9,8 @@ function out = util(command,varargin)
         out = getEEGFiles(varargin{1});
     elseif strcmp(command,'getProbeLabels')
         out = getProbeLabels(varargin{1});
+    elseif strcmp(command,'getLabelFiles')
+        out = getLabelFiles(varargin{1});
     else
         error('Function ''%s'' not defined',command)
     end
@@ -27,10 +29,17 @@ function filenames = getEEGFiles(eeg_path)
     filenames = filenames(contains(filenames,'.set'));
 end
 
+function filenames = getLabelFiles(label_path)
+    filenames = getFiles(label_path);
+    filenames = filenames(contains(filenames,'.txt'));
+end
+
 function labels = getProbeLabels(behave_file)
     load(behave_file, 'all_probe_responses')
     labels = all_probe_responses(2:7:end,9);
 end
+
+
 
 %%
 %%%%%%%%%%%%%%%%%%%
@@ -38,8 +47,8 @@ end
 %%%%%%%%%%%%%%%%%%%
 function filenames = getFiles(path)
     files = dir(path);
-    filenames =[];
+    filenames =cell(size(files));
     for i=1:length(files)
-        filenames = [filenames,string(sprintf('%s/%s',files(i).folder,files(i).name))];
+        filenames{i} = sprintf('%s/%s',files(i).folder,files(i).name);
     end 
 end

@@ -92,7 +92,6 @@ for i = 1:num_files
     select_with_inds(EEG,mw_inds,'WM',name,mw_dir);
     select_with_inds(EEG,mb_inds,'MB',name,mb_dir);
     
-    
 end
 
 function partial_correction

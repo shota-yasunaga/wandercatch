@@ -28,7 +28,10 @@ util_dir     = '/Users/macbookpro/Dropbox/College/TsuchiyaLab/wandercatch/';
 % threshold
 % threshold to detect noisy channels
 % if channels have the potential more than the threshold, it's a noise
-THRESHOLD = 180
+THRESHOLD = 180;
+
+
+EP_THRESH = 9;
 
 
 %%%%%%%%%%%%%%%%%%%%
@@ -57,30 +60,38 @@ func_wrapper = @(filename) detect_noisy_channel(char(filename),THRESHOLD);
 
 % chaninds = arrayfun(func_wrapper,eegfiles, 'UniformOutput', false)
 
-chan_inds = detect_noisy_epoch(char(eegfiles(1)),THRESHOLD);
+noisy_epoch = detect_noisy_epoch(char(eegfiles(1)),THRESHOLD,EP_THRESH);
 
-
+for i = 1:length(eegfiles)
+    noisy_epoch = detect_noisy_epoch(char(eegfiles(i), THRESHOLD,EP_THRESH);
+    
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % Main function to call %
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 function chan_inds = detect_noisy_channel(filename,threshold)
-    
+    % function to detect noisy channels throughout all of the time points
+    [folder,name,ext] = fipeparts(filename);
+    disp('/n/n')
+    fprintf('=====================')
+    fprintf('Processing %s...', name)
     EEG = pop_loadset('filename',filename);
     noise_flags = EEG.data>threshold;
-    chan_noise_flags = sum(sum(noise_flags,2),3)>10; %TODO: what should I do?
-    chan_inds = find(chan_noise_flags)
+    chan_noise_flags = sum(sum(noise_flags,2),3); 
+    chan_inds = find(chan_noise_flags);
+    
+    
 end
 
 
 
-function chan_inds = detect_noisy_epoch(filename,threshold)
+function chan_inds = detect_noisy_epoch(filename,volt_thresh,epoch_thresh)
     EEG = pop_loadset('filename',filename);
-    noise_flags = EEG.data>threshold;
+    noise_flags = EEG.data>volt_thresh;
     chan_noise_flags = sum(noise_flags,2);
-    chan_noise_flags = chan_noise_flags>1
-    
-    chan_inds = sum(chan_noise_flags,1)
+    chan_noise_flags = chan_noise_flags>1;
+    chan_inds = find(sum(chan_noise_flags,1)>epoch_thresh);
 end
 
