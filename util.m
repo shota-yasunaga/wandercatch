@@ -27,8 +27,9 @@ function filenames = getEEGFiles(eeg_path)
     filenames = filenames(contains(filenames,'.set'));
 end
 
-function labels = getProbeLabels(responses_var)
-    labels = responses_var(2:7:end,9);
+function labels = getProbeLabels(behave_file)
+    load(behave_file, 'all_probe_responses')
+    labels = all_probe_responses(2:7:end,9);
 end
 
 %%

@@ -76,11 +76,10 @@ for i = 1:num_files
     [~,pat_num] = strtok(name,'S');
     pat_num = sscanf(pat_num,'S%s'); % End with number please
     pat_num = ['s' pat_num];
-    behave_file = char(behave_files(contains(behave_files,pat_num)));
     
-    load(behave_file, 'all_probe_responses')
-    
-    labels = util('getProbeLabels',all_probe_responses);
+    % Actually getting labels
+    behave_file = behave_files{contains(behave_files,pat_num)}; %MAybe wrong    
+    labels = util('getProbeLabels',behave_file);
     
     % eeglab
     
