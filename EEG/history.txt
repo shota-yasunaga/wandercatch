@@ -18,24 +18,32 @@ num_channels_removed =
   Columns 18 through 21
     11     9    24    15
 
-
 num_epochs_removed =
   Columns 1 through 17
      3     0     0     3     2    52    35     1     0    33     1    16     0    34     1     0    58
   Columns 18 through 21
      3    49    16     1
-
+        --> ppt 6,7,10,19,17,14 out (S6,7,10,14,18,21)
+        --> maybe ppt 20 (S22) is also out
 
 # number of epochs that are in each category
-  Columns 1 through 17
-    36    26    32    44    31    48    52    42    49    27    35    37    27    52    59    30    60
-  Columns 18 through 21
-    41    61    33    34
-  Columns 1 through 17
-    26    24    19     9    26     4     2    17     8     0     9    20    37    12     3    24     1
-  Columns 18 through 21
-     2     3    16    23
-  Columns 1 through 17
-     1    14    10    10     6     6    10     4     7    34    20     4     0     0     2     8     3
-  Columns 18 through 21
-    21     0    14     6
+Remaining ppts
+   Columns 1 through 4
+    'pPR_ffefspm_S301'    'pPR_ffefspm_S302'    'pPR_ffefspm_S303'    'pPR_ffefspm_S304'
+  Columns 5 through 8
+    'pPR_ffefspm_S305'    'pPR_ffefspm_S308'    'pPR_ffefspm_S309'    'pPR_ffefspm_S311'
+  Columns 9 through 12
+    'pPR_ffefspm_S312'    'pPR_ffefspm_S313'    'pPR_ffefspm_S315'    'pPR_ffefspm_S317'
+  Columns 13 through 15
+    'pPR_ffefspm_S319'    'pPR_ffefspm_S322'    'pPR_ffefspm_S323'
+ON
+  33    26    32    43    30    42    49    34    33    27    58    30    38    24    34
+
+MW
+  26    24    19     8    25    16     8     9    10    37     3    24     2    12    22
+
+MB
+  1    14    10     9     6     4     7    20     2     0     2     8    21    12     6
+
+--> ppt 315 not good
+

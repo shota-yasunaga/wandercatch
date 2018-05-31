@@ -150,8 +150,8 @@ function EEG = interp_avg_reference(EEG, chanlocs)
 end
 
 function labels = remaining(EEG)
-    labels = {length(EEG)};
-    for i = 1:length(EEG)
+    labels = {length(EEG.chanlocs)};
+    for i = 1:length(EEG.chanlocs)
         labels{i}=EEG.chanlocs(i).labels;
     end
 end 
