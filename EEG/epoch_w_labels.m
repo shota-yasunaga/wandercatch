@@ -24,7 +24,7 @@ behavior_dir = '/Users/macbookpro/Dropbox/College/TsuchiyaLab/Behavior_Data';
 % The script is dependent of the fact taht you put S (capital) in front of
 % the number of participants
 % if you want to change it, you need to look at around "strtok"
-eeg_dir      = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/Probes/eeglab';
+eeg_dir      = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/Probes/eeglab_prep';
 
 % file, util. Has to have util.m in it. 
 util_dir     = '/Users/macbookpro/Dropbox/College/TsuchiyaLab/wandercatch/';

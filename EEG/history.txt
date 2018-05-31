@@ -13,23 +13,29 @@ THRESHOLD = 200;
 EP_THRESH = 5;
  —>
 num_channels_removed =
-
   Columns 1 through 17
-
     14     6     5    11     7     7    16    13    13    10    12    11     8    16    11    10     6
-
   Columns 18 through 21
-
     11     9    24    15
 
 
 num_epochs_removed =
-
   Columns 1 through 17
-
      3     0     0     3     2    52    35     1     0    33     1    16     0    34     1     0    58
-
   Columns 18 through 21
-
      3    49    16     1
 
+
+# number of epochs that are in each category
+  Columns 1 through 17
+    36    26    32    44    31    48    52    42    49    27    35    37    27    52    59    30    60
+  Columns 18 through 21
+    41    61    33    34
+  Columns 1 through 17
+    26    24    19     9    26     4     2    17     8     0     9    20    37    12     3    24     1
+  Columns 18 through 21
+     2     3    16    23
+  Columns 1 through 17
+     1    14    10    10     6     6    10     4     7    34    20     4     0     0     2     8     3
+  Columns 18 through 21
+    21     0    14     6
