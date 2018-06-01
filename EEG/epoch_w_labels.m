@@ -33,6 +33,7 @@ util_dir     = '/Users/macbookpro/Dropbox/College/TsuchiyaLab/wandercatch/';
 on_dir   = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/Probes/On'; % On Task
 mb_dir   = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/Probes/MB'; % Mind Blanking
 mw_dir   = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/Probes/MW'; % Mind Wandering
+off_dir  = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/Probes/Off'; % Off Task
 
 % Directory where you want to save the figure
 % saving_dir = '/Users/macbookpro/Dropbox/College/TsuchiyaLab/Plots';
@@ -74,10 +75,11 @@ names={num_files}
 num_on=[];
 num_mw=[];
 num_mb=[];
+num_off=[];
 for i = 1:num_files
     % Just getting the right files 
     eeg_file  = eeg_files(i);
-    [folder,name,ext] = fileparts(char(eeg_file));
+    [~,name,~] = fileparts(char(eeg_file));
     [~,pat_num] = strtok(name,'S');
     pat_num = sscanf(pat_num,'S%s'); % End with number please
     pat_num = ['s' pat_num];
@@ -88,20 +90,23 @@ for i = 1:num_files
     
     % eeglab
     
-    EEG = pop_loadset('filename',[name ext],'filepath',folder);  
+    EEG = pop_loadset('filename',eeg_file);  
     
     labels = getLabels(EEG);
     names{i}=name;
-    on_inds = find(strcmp(labels,'On')); num_on(i) = length(on_inds);
-    mw_inds = find(strcmp(labels,'MW')); num_mw(i) = length(mw_inds);
-    mb_inds = find(strcmp(labels,'MB')); num_mb(i) = length(mb_inds);
-    select_with_inds(EEG,on_inds,'ON',name,on_dir);
-    select_with_inds(EEG,mw_inds,'WM',name,mw_dir);
-    select_with_inds(EEG,mb_inds,'MB',name,mb_dir);
+    on_inds  = find(strcmp(labels,'On')); num_on(i) = length(on_inds);
+    mw_inds  = find(strcmp(labels,'MW')); num_mw(i) = length(mw_inds);
+    mb_inds  = find(strcmp(labels,'MB')); num_mb(i) = length(mb_inds);
+    off_inds = [mw_inds mb_inds]; num_off(i) = length(off_inds);
+%     select_with_inds(EEG,on_inds,'ON',name,on_dir);
+%     select_with_inds(EEG,mw_inds,'WM',name,mw_dir);
+%     select_with_inds(EEG,mb_inds,'MB',name,mb_dir);
+    select_with_inds(EEG,off_inds,'Off',name,off_dir);
 end
-disp(num_on)
-disp(num_mw)
-disp(num_mb)
+% disp(num_on)
+% disp(num_mw)
+% disp(num_mb)
+disp(num_off)
 disp(names)
 
 function partial_correction

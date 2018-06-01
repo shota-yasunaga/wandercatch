@@ -11,8 +11,8 @@ function out = util(command,varargin)
         out = getProbeLabels(varargin{1});
     elseif strcmp(command,'getLabelFiles')
         out = getLabelFiles(varargin{1});
-    elseif stcmp(command, 'constructPath')
-        out = constructPath(varagin(1),varagin(2));
+    elseif strcmp(command, 'constructPath')
+        out = constructPath(char(varargin(1)),char(varargin(2)));
     else
         error('Function ''%s'' not defined',command)
     end
@@ -45,7 +45,7 @@ function result_path = constructPath(parent,child)
     % construct path from the parent and child
     % this just takes care of / insertion
     % Caution! This only works with Mac
-    if parent(end) = '/' || parent(end) = '\'
+    if parent(end) == '/' || parent(end) == '\'
         result_path = [parent child];
     else
         result_path = [parent '/' child];
