@@ -52,7 +52,12 @@ addpath(util_dir)
 % eeglab (ver14.0.0 used, but other versions might work as well)
 eeglab 
 close all
+
+
 %%
+%%%%%%%%%%
+% Script %
+%%%%%%%%%%
 col = 0;
 for cond = folder_names
     disp(cond{1}) % Sanity Check
@@ -60,14 +65,14 @@ for cond = folder_names
     current_folder = util('constructPath',eeg_dir,cond{1});
     eeg_files      = util('getEEGFiles',current_folder);
     num_files      = length(eeg_files);
-    for i = 1:num_files %TODO: fix it
+    for i = 1:num_files 
         EEG = pop_loadset('filename',eeg_files(i));
         disp(EEG.filename) % Sanity check
         plot_decomp(EEG,i,col,cond{1})
     end
 end
 
-for i=1:num_files %TODO: fix it
+for i=1:num_files 
     f = figure(i);
     set(f,'rend','painters','pos',[0 0 1200 900])
     [~,name,~] = fileparts(eeg_files{i});
@@ -79,6 +84,10 @@ end
 % Main functino to plot %
 %%%%%%%%%%%%%%%%%%%%%%%%%
 function plot_decomp(EEG,fid, col,label)
+    % Plot before probe and after probe on figure(fid)
+    % (frequency decomposition between [1 40].
+    % col specifies the column
+    % label specifies which condition it was (for title)
     figure(fid)
     subplot(2,3,col)
     title([label ' before'])
