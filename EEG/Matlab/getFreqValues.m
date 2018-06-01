@@ -68,7 +68,7 @@ for cond = folder_names
     for i = 1:num_files 
         EEG = pop_loadset('filename',eeg_files(i));
         disp(EEG.filename) % Sanity check
-        plot_decomp(EEG,i,col,cond{1})
+        plot_decomp(EEG,i,col,cond{1}) % Plot frequency decomposition
     end
 end
 
@@ -94,12 +94,13 @@ function plot_decomp(EEG,fid, col,label)
     pop_spectopo(EEG, 1, [0  10000], 'EEG' , 'freq', [10 22 30], 'freqrange',[1 40],'electrodes','off');
     subplot(2,3,3+col)
     title([label ' after'])
-    pop_spectopo(EEG, 1, [10000  20000], 
-    'EEG' , 'freq', [10 22 30], 'freqrange',[1 40],'electrodes','off');
+    pop_spectopo(EEG, 1, [10000  20000], 'EEG' , 'freq', [10 22 30], 'freqrange',[1 40],'electrodes','off');
 end
 
 
-function getSpectValues(data,frames,strate)
+function [eegspecdB,freqs,compeegspecdB,resvar,specstd] = get_decomp_values(EEG)
     
+    [eegspecdB,freqs,compeegspecdB,resvar,specstd] = spectopo(EEG.data,5001,
 end
+
 

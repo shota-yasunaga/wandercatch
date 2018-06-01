@@ -6,14 +6,17 @@ Main Editor: Shota Yasunaga
 
 Email      : shotayasunaga1996@gmail.com
 
-Institution: Monash University  (research conducted)
-
-             Pitzer College     (home institute of Shota)
+Institution: Monash University  (research conducted)/Pitzer College     (home institute of Shota)
 
 Last Modified (Look at the commit history for now)
 
+# General Procedure that I followed
+
+
 # Behavior
 Functions for behavioral analysis
+
+Information about the data index is at the bottom
 - behavior_overview
   - What it does
 
@@ -34,11 +37,23 @@ Functions for behavioral analysis
 - transition_analysis
     
     Plots how the state (On task, Mind Wandering etc) transitioned. 
+    - getLabelSequence.m
+    Helper function for the transition_analysis. It returns the labels of probes
 - behavior_analysis_ratio
 
     Plots information related how much of probes were "on task", "mind wandering", etc. 
 
 
+
+
+# EEG
+Functions to conduct eeg data analysis
+
+Matlab
+- 
+
+Python
+- Develpping....
 
 # Behavioral Data
 
