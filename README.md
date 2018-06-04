@@ -8,7 +8,7 @@ Email      : shotayasunaga1996@gmail.com
 
 Institution: Monash University  (research conducted)/Pitzer College     (home institute of Shota)
 
-Last Modified (Look at the commit history for now)
+Last Modified [2018-06-04 12:58]  
 
 
 ## Behavior
@@ -57,7 +57,14 @@ Information about the data index is at the bottom
 Functions to conduct eeg data analysis
 
 ### Procedure
-1. 
+0. convert_location_mat2eeglab.m create location file (skip if you have .xyz file. in this repository)
+1. spm2eeg.m ... convert spm to eeglab structure
+2. interpolate_loop.m ... clean the data and average reference
+3. label2txt.m ... get the labels of epochs that are available for eeglab
+4. label_epoch.m ... labels epochs of eeglab dataset
+5. epoch_w_labels.m ... create new datasets based on the epochs
+6. plot_freq_loop.m ... create frequency decompositions maps
+
 
 ### Functions
 ### Matlab
@@ -89,11 +96,10 @@ Functions to conduct eeg data analysis
 - getFreqValues
   
   DEVELOPPING...
-
-
 - interpolate_loop.m
-  
-  interpolate removed channels --> average reference --> remove the channels again
+
+  1. Remove bad epochs --> Remove bad channels, both using voltage threshold. For bad epochs, I also have threshold for number of bad channels. If an epoch has more than threshold bas channels, the script reject that epoch.
+  2. interpolate removed channels --> average reference --> remove the channels again
 
 - label_epoch.m
   
