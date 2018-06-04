@@ -1,7 +1,7 @@
 # wanderlust
 Wanderlust project (analyses functions)
 
-# Meta Information
+## Meta Information
 Main Editor: Shota Yasunaga
 
 Email      : shotayasunaga1996@gmail.com
@@ -10,10 +10,8 @@ Institution: Monash University  (research conducted)/Pitzer College     (home in
 
 Last Modified (Look at the commit history for now)
 
-# General Procedure that I followed
 
-
-# Behavior
+## Behavior
 Functions for behavioral analysis
 
 Information about the data index is at the bottom
@@ -43,19 +41,89 @@ Information about the data index is at the bottom
 
     Plots information related how much of probes were "on task", "mind wandering", etc. 
 
+- behavior_response_time.m
+
+  Under development... might not finish...
+
+- plot_conds_num_available
+  
+  plot number of participants available based on threshold for number of conditions for each conditions. 
+  It plots 
+  1. Number of available participants for cond vs cond (both conds have to have above threshold epochs available)
+  2. Numbr of available participants for each cond
 
 
-
-# EEG
+## EEG
 Functions to conduct eeg data analysis
 
-Matlab
-- 
+### Procedure
+1. 
 
-Python
-- Develpping....
+### Functions
+### Matlab
+- util.m
+  Gathered common operations for scripts
 
-# Behavioral Data
+  Syntax is out = util('FunctionName', inputs)
+  - getBehaviorFiles(dir)... get the .mat files under dir
+  - getEEGFiles (dir) ... get the .set files under dir
+  - getProbeLabels(file)... get the labels(On,MW, etc) based on behavior file
+  - getLabelFiles(dir)... get .txt files under dir
+  - constructPath(parent, child) ... construct path that is parent/child
+
+- AMICA_Wrapper_files
+
+  Run AMICA for each files in a directory
+- chan_loc.xyz
+
+  Channel location file for eeglab
+- convert_location_mat2eeglab
+
+  You don't have to run this. This creates chan_loc.xyz(above)
+- epoch_w_labels
+
+  Script to create eeglab dataset that is epoched based on the labels 
+  (On task, Mind Wandeirng, Mind Blanking) and save them to folders accordingly.
+
+  ! Each Epochs have to be labels beforehand. 
+- getFreqValues
+  
+  DEVELOPPING...
+
+
+- interpolate_loop.m
+  
+  interpolate removed channels --> average reference --> remove the channels again
+
+- label_epoch.m
+  
+  Script to label epochs based on the labels that are made with label2txt
+
+- label2txt.m
+  
+  Based on behavior data, construct text file that is available to eeglab to label epochs
+
+- plot_freq_loop.m
+  
+   loop to plot frequency decomposition 
+ Create a plot/ppt that contains 
+ Before Proebe Cond1 Cond2 Cond3 
+ After Probe   Cond1 Cond2 Cond3
+ (Create 6 plots in 1 figure)
+
+- spm2eeglab.m
+
+  Import spm data to eeglab
+  ! It only converts the data and channel location (including epochs but not the labels of epochs)
+  ! You need to have .xyz file in order to do the loation convertion
+
+
+
+
+#### Python
+- Develpping...
+
+#### Behavioral Data
 
 - all_task_responses
  1. num_blocks
@@ -64,8 +132,11 @@ Python
  4. block_type ... 1: verbal task 2: spatial
  5. direction... 1 is right (forward),2 is lest(backward)
  6-9 ... right answer
+
  10-12... keyboard num (response)
+
  14-17... corrected response
+
  18-21... correctness-> NaN means there was probe
     --> no response time
 
@@ -109,14 +180,10 @@ Python
  8. Onset of the reaction
  9. What the answer was (for the question)
  
- For 2nd question
+ For 2nd question (Labels)
  (1) Off-Task (2) Blank (3) Don''t Remember (4)
 
 
-
-9... what it means
-7...
-8... 
 - all_probe_times
  1. Probe Num
  2. Block Num

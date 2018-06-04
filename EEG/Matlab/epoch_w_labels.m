@@ -1,6 +1,7 @@
 %% epoch_w_labels
 % Script to create eeglab dataset that is epoched based on the labels 
 % (On task, Mind Wandeirng, Mind Blanking)
+% You need to have all of the behavior data 
 % 
 % By Shota Yasunaga
 % 
@@ -54,36 +55,26 @@ partial_mode = true;
 addpath(util_dir)
 
 % eeglab (ver14.0.0 used, but other versions might work as well)
+eeglab
 
 %%
 %%%%%%%%%%
 % Script %
 %%%%%%%%%%
-behave_files = util('getBehaviorFiles',behavior_dir);
 
 eeg_files    = util('getEEGFiles',eeg_dir);
 
-if length(behave_files) ~= length(eeg_files) && not(partial_mode)
-    error('You need to have same number of files to run the script')
-end
-
 num_files = length(eeg_files);
 
-eeglab
-
-names={num_files}
+names={num_files};
 num_on=[];
 num_mw=[];
 num_mb=[];
 num_off=[];
 for i = 1:num_files
-    % Just getting the right files 
     eeg_file  = eeg_files(i);
-    [~,name,~] = fileparts(char(eeg_file));
-    [~,pat_num] = strtok(name,'S');
-    pat_num = sscanf(pat_num,'S%s'); % End with number please
-    pat_num = ['s' pat_num];
-    
+    [~,name,~] = fileparts(char(eeg_file)); % get the name
+
     % Actually getting labels
 %     behave_file = behave_files{contains(behave_files,pat_num)}; %MAybe wrong    
 %     labels = util('getProbeLabels',behave_file);
@@ -98,15 +89,20 @@ for i = 1:num_files
     mw_inds  = find(strcmp(labels,'MW')); num_mw(i) = length(mw_inds);
     mb_inds  = find(strcmp(labels,'MB')); num_mb(i) = length(mb_inds);
     off_inds = [mw_inds mb_inds]; num_off(i) = length(off_inds);
-%     select_with_inds(EEG,on_inds,'ON',name,on_dir);
-%     select_with_inds(EEG,mw_inds,'WM',name,mw_dir);
-%     select_with_inds(EEG,mb_inds,'MB',name,mb_dir);
+    select_with_inds(EEG,on_inds,'ON',name,on_dir);
+    select_with_inds(EEG,mw_inds,'WM',name,mw_dir);
+    select_with_inds(EEG,mb_inds,'MB',name,mb_dir);
     select_with_inds(EEG,off_inds,'Off',name,off_dir);
 end
-% disp(num_on)
-% disp(num_mw)
-% disp(num_mb)
+disp('On')
+disp(num_on)
+disp('MW')
+disp(num_mw)
+disp('MB')
+disp(num_mb)
+disp('Off')
 disp(num_off)
+disp('Name')
 disp(names)
 
 function partial_correction
