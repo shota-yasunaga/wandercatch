@@ -48,3 +48,19 @@ MB
 --> ppt 315 not good
 
 
+
+
+## Trials
+Epochs removed
+  Columns 1 through 17
+     7     1     1     2     2   130   109     4     1    60     5    71     0   104     3     1   217
+  Columns 18 through 21
+     3   121    25     5
+
+Channels Removed
+  Columns 1 through 17
+    19     9     9    17    11    19    32    19    16    15    14    26    10    20    13    18    17
+  Columns 18 through 21
+    12    21    26    11
+    [11×1 double]
+

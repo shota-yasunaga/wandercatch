@@ -59,9 +59,9 @@ Functions to conduct eeg data analysis
 ### Procedure
 0. convert_location_mat2eeglab.m create location file (skip if you have .xyz file. in this repository)
 1. spm2eeg.m ... convert spm to eeglab structure
-2. interpolate_loop.m ... clean the data and average reference
-3. label2txt.m ... get the labels of epochs that are available for eeglab
-4. label_epoch.m ... labels epochs of eeglab dataset
+2. label2txt.m ... get the labels of epochs that are available for eeglab
+3. label_epoch.m ... labels epochs of eeglab dataset
+4. interpolate_loop.m ... clean the data and average reference
 5. epoch_w_labels.m ... create new datasets based on the epochs
 6. plot_freq_loop.m ... create frequency decompositions maps
 
