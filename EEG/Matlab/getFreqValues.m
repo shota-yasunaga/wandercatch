@@ -23,6 +23,10 @@ clear
 eeg_dir      = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/Probes';
 folder_names = {'On','Off','MW'};
 
+eeg_folder   = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/Probes/eeglab_prep';
+
+saving_var   = '/Volumes/SHard/Probes/freqValues';
+
 % file, util. Has to have util.m in it. 
 util_dir     = '/Users/macbookpro/Dropbox/College/TsuchiyaLab/wandercatch/';
 
@@ -53,30 +57,45 @@ addpath(util_dir)
 eeglab 
 close all
 
+temp = true;
 
 %%
 %%%%%%%%%%
 % Script %
 %%%%%%%%%%
-col = 0;
-for cond = folder_names
-    disp(cond{1}) % Sanity Check
-    col = col+1;
-    current_folder = util('constructPath',eeg_dir,cond{1});
-    eeg_files      = util('getEEGFiles',current_folder);
-    num_files      = length(eeg_files);
-    for i = 1:num_files 
-        EEG = pop_loadset('filename',eeg_files(i));
-        disp(EEG.filename) % Sanity check
-        plot_decomp(EEG,i,col,cond{1}) % Plot frequency decomposition
+if temp
+    eeg_files = util('getEEGFiles',eeg_folder);
+    num_files = length(eeg_files);
+    for i = 1:num_files
+        EEG = pop_loadset('filename',eeg_files{i});
+        [spectra,freqVec]=get_decomp_values(EEG,10000,20000);
+        spectra = spectra(:,1:51);
+        freqVec = freqVec(1:51);
+        saving_local = util('constructPath',saving_var,['freq_', EEG.setname]);
+        save(saving_local,'spectra','freqVec')
     end
-end
+else
+    col = 0;
+    for cond = folder_names
+        disp(cond{1}) % Sanity Check
+        col = col+1;
+        current_folder = util('constructPath',eeg_dir,cond{1});
+        eeg_files      = util('getEEGFiles',current_folder);
+        num_files      = length(eeg_files);
+        for i = 1:num_files 
+            EEG = pop_loadset('filename',eeg_files(i));
+            disp(EEG.filename) % Sanity check
+            get_decompv_values(EEG,i,col,cond{1}) % Plot frequency decomposition
+        end
+    end
 
-for i=1:num_files 
-    f = figure(i);
-    set(f,'rend','painters','pos',[0 0 1200 900])
-    [~,name,~] = fileparts(eeg_files{i});
-    saveas(f, fullfile(saving_dir, char(['freq_' name])), 'png'); % save it
+    for i=1:num_files 
+        f = figure(i);
+        set(f,'rend','painters','pos',[0 0 1200 900])
+        [~,name,~] = fileparts(eeg_files{i});
+        saveas(f, fullfile(saving_dir, char(['freq_' name])), 'png'); % save it
+    end
+
 end
 
 %%
@@ -98,9 +117,10 @@ function plot_decomp(EEG,fid, col,label)
 end
 
 
-function [eegspecdB,freqs,compeegspecdB,resvar,specstd] = get_decomp_values(EEG)
-    
-    [eegspecdB,freqs,compeegspecdB,resvar,specstd] = spectopo(EEG.data,5001,
+function [eegspecdB,freqVec] = get_decomp_values(EEG,start_frame, end_frame)
+    figure;
+    [eegspecdB,freqVec] = pop_spectopo(EEG, 1, [start_frame  end_frame], 'EEG' , 'freqrange',[1],'electrodes','off');
+    close(gcf) % Close the figure
 end
 
 
