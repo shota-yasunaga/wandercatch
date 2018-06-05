@@ -61,8 +61,12 @@ end
 function filenames = getFiles(path)
     % grabs all of the files from the path
     files = dir(path);
-    filenames =cell(size(files));
+    filenames ={};
+    cell_ind = 1;
     for i=1:length(files)
-        filenames{i} = sprintf('%s/%s',files(i).folder,files(i).name);
+        if files(i).name(1) ~= '.'
+            filenames{cell_ind} = sprintf('%s/%s',files(i).folder,files(i).name);
+            cell_ind = cell_ind + 1;
+        end
     end 
 end
