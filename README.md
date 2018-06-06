@@ -64,6 +64,8 @@ Functions to conduct eeg data analysis
 4. interpolate_loop.m ... clean the data and average reference
 5. epoch_w_labels.m ... create new datasets based on the epochs
 6. plot_freq_loop.m ... create frequency decompositions maps
+6. getFreqValues.m
+7. run_foof.py (from here,it's python)
 
 
 ### Functions
@@ -94,6 +96,8 @@ Functions to conduct eeg data analysis
 
   ! Each Epochs have to be labels beforehand. 
 - getFreqValues
+  
+  Scripts to save the values of the power spectrum
   
   DEVELOPPING...
 - interpolate_loop.m
