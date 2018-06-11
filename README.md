@@ -65,7 +65,9 @@ Functions to conduct eeg data analysis
 5. epoch_w_labels.m ... create new datasets based on the epochs
 6. plot_freq_loop.m ... create frequency decompositions maps
 6. getFreqValues.m
-7. run_foof.py (from here,it's python)
+7. fit_fooof_script.py (from here,it's python)
+8. freq_power_comparison.py,plot_fooof_vs_labels.py,peak_power_cmp.py
+
 
 
 ### Functions
@@ -131,7 +133,45 @@ Functions to conduct eeg data analysis
 
 
 #### Python
-- Develpping...
+- fit_fooof_script.py
+
+  Script to fit the fooof model for all of the power spectrum under a folder.
+  You can save the fitted values/report of fitting
+
+
+- freq_power_comparison.py
+
+  Script to plot the power spectrum of the differnent conditions for each participant
+
+- plot_fooof_vs_labels.py
+
+  scripts to plot fooof fitted values vs the amount of labels (On,OW,MB,Off)
+
+- peak_power_cmp.py
+
+  to compare the peak (including freqneucy tags and alpha) values between labels(On,MW,MB,etc)
+
+##### Helper Functions
+
+- fooof_vars_methods.py
+
+  Methods useful for extracting values from the fooof fitted values(finding alpha, finding amplitude of alpha
+
+- util.py
+  
+  have different useful functions for mostly classifiers. It also has cd class that deals with moving directories
+
+- mat2python.py
+
+  helper methos to read matlab variables and convert it to be able to use for the python script. It has usefult iterators, too. å
+
+- plot_methods.py
+  
+  helper methods for plooting scatter plots
+
+
+
+
 
 #### Behavioral Data
 
