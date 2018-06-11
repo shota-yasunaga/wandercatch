@@ -12,48 +12,31 @@ def save_file(file_name,variable):
 
 def run_fooof(freq_path,loc_path,save_report_path,save_variables_path,save_variable_prefix,save_variables = True
 ,save_report=True,freq_range=[1,30],channel = 'Oz'):
-    freq_dir = os.fsencode(freq_path)
-    loc_dir  = os.fsencode(loc_path)
 
-    freIterator = folderIterator(freq_path)
+    freqIterator = folderIterator(freq_path)
     chan_inds_iterator = chanIndIterator(loc_path)
 
     # Constant
     bg_ppts= []# background parameters/ppts
     peak_ppts = []
     errors = []
-
-    for files in zip(os.listdir(freq_dir),os.listdir(loc_dir)):
-        print(files) # Sanity Check. 
-
-        if True: # if files[0].endswith(".mat"): TODO: set the conditions for safety
-            freq_var = os.path.join(freq_dir, files[0])
-            loc_var  = os.path.join(loc_dir, files[1])
-            
-            print(loc_var)
+    for chan_ind, freq_var in zip(chan_inds_iterator,freqIterator)
+        if True: # if files[0].endswith(".mat"): TODO: set the conditions for safety            
             power,spectrum = getFreqValuesVec(freq_var)
-            chanlocs = getChanLocs(loc_var)
-            if (channel in chanlocs):
-                oz_ind = chanlocs.index(channel)
-                
-                power = 10**np.array(power[oz_ind])
+            if chan_ind != -1
+                power = 10**np.array(power[chan_ind])
                 spectrum=np.array(spectrum).flatten()
                 # Initialize FOOOF object
                 fm = FOOOF(peak_width_limits=[0.5,8])
                 
                 # Model the power spectrum with FOOOF, and print out a report
-                print(len(power))
                 fm.fit(spectrum, power, freq_range)
 
                 bg_ppts.append(fm.background_params_)
                 peak_ppts.append(fm.peak_params_)
                 errors.append(fm.error_)
                 if save_report:
-                    fm.save_report(str(files[0][-7:-4]),save_report_path)
-            else:
-                print(files[0], 'did not have Oz')
-                input('understood?')
-
+                    fm.save_report(str(freq_var[-7:-4]),save_report_path)
 
     if save_variables :
         with cd(save_variables_path):
