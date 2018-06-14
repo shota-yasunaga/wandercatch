@@ -1,12 +1,17 @@
+import sys
+sys.path.append("..") # Adds higher directory to python modules path.
+from util import cd
 import util
 import numpy as np
 import matplotlib.pyplot as plt
-from mat2python import data
+from mat2python import getWholeFeatures,getSubsampledFeatures,getFakeData
+from plot_methods import plot_scatters
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import scale
-
+from sklearn.metrics import f1_score
+from scipy.io import savemat
 
 
 def tune(X_train, y_train, scoring):
@@ -43,76 +48,201 @@ def tune(X_train, y_train, scoring):
     rf_random.fit(X_train, y_train)
     return rf_random.best_params_, rf_random.best_score_
 
-def main():
-    X,y = data('/Users/macbookpro/Dropbox/College/6th Semester/Network Science/Project/Network_Science_Project/Secret')
-    # k_fold = util.KFolder(X,y,1) # Don't get confused. k_fold is ieterator
-    # print(k_fold)
-    X = scale(X)
-    k_fold = util.splitData(X,y,n_split=5)
-
-    training_list = []
-    test_list = []
+def svc_loop(k_fold,verbose=True):
+    whole_training = []
+    whole_test     = []
     for X_train, y_train, X_test, y_test in k_fold:
-        lin_clf = SVC(kernel='linear',C=0.1,class_weight='balanced')
-        pol_clf = SVC(kernel ='poly', C=1,class_weight='balanced',degree=10)
-        rbf_clf = SVC(kernel='rbf', C=0.1,class_weight='balanced')
+        # lin_clf = SVC(kernel='linear',C=0.1,class_weight='balanced')
+        # pol_clf = SVC(kernel ='poly', C=1,class_weight='balanced',degree=10)
+        # rbf_clf = SVC(kernel='rbf', C=0.1,class_weight='balanced')
 
+        lin_clf = SVC(kernel='linear',C=0.001)
+        pol_clf = SVC(kernel ='poly', C=1,degree=3)
+        rbf_clf = SVC(kernel='rbf', C=1)
         #clfs = [lin_clf,pol_clf,rbf_clf]
-        clfs= [lin_clf]
+        clfs= [lin_clf,pol_clf,rbf_clf]
+        training_list = []
+        test_list = []
         for clf in clfs:
             clf.fit(X_train,y_train)
             y_pred = clf.predict(X_test)
-            training_accuracy=accuracy_score(y_train,clf.predict(X_train))
-            test_accuracy = accuracy_score(y_test,y_pred)
-            print('------------------')
-            print(clf)
-            print('training accuracy')
-            print(training_accuracy)
+            # training_accuracy=f1_score(y_train,clf.predict(X_train),average="weighted")
+            # test_accuracy = f1_score(y_test,y_pred,average="weighted")
+            training_accuracy = accuracy_score(y_train,clf.predict(X_train))
+            test_accuracy     = accuracy_score(y_test,y_pred)
+            
             training_list.append(training_accuracy)
-            print('test accuracy')
-            print(test_accuracy)
             test_list.append(test_accuracy)
-            print('Confusion Matrix')
-            print(confusion_matrix(y_test,y_pred))
+            if verbose:
+                print('------------------')
+                print(clf)
+                print('training accuracy score')
+                print(training_accuracy)
+                print('test accuracy score')
+                print(test_accuracy)
+                print('Confusion Matrix')
+                print(confusion_matrix(y_test,y_pred))
 
-    print(training_list)
-    print(test_list)
-    return 
-    #########################
-    # With pca              #
-    # Can we do better????  #
-    #########################
-    pca = PCA(n_components = 100,svd_solver='auto')
-    pca.fit(np.transpose(X)) # this probably is kinda bad,but rn, I'm doing this.
-    print(X.shape)
-    print(pca.components_.shape)
-    features = np.transpose(pca.components_)
-    print('================')
-    print(features.shape)
+        whole_training.append(training_list) #(folds,clfs)
+        whole_test.append(test_list)
 
-    splitter = util.splitData(features,y,n_split=1)
+    whole_training = np.transpose(np.array(whole_training)) #(clfs,folds)
+    whole_test = np.transpose(np.array(whole_test))
+
+    if verbose:
+        print(whole_test)
+        print(whole_training)
+    # (clfs,trials)
+    return whole_training,whole_test
+
+
+def performance_subsamples_as_func(subSamples,as_func_dim,n_fold,verbose=False):
+    sub_training=[]
+    sub_test    =[]
+    for X,y in subSamples:
+        # First dim: channels 
+        chans_training = [] #(chans,clfs)
+        chans_test     = []
+
+        if as_func_dim == 1:
+            get_local = lambda X: X[:,i]
+            itr = range(len(X[0]))
+        elif as_func_dim == 2:
+            get_local = lambda X: X[:,:,i]
+            itr = range(len(X[0][0]))
+        elif as_func_dim == 3:
+            get_local = lambda X: X[:,:,:,i]
+            itr = range(len(X[0][0][0]))
+        elif as_func_dim == 0: # Not iterate
+            get_local = lambda X: X
+            itr = [1]
+        else:
+            error('Expand the function to supper bigger dimension (performance_subsamples_as_func)')
+
+        for i in itr:
+            X_local = get_local(X)
+
+            X_local = flatten_features(X_local)
+            X_local = scale(X_local)
+            k_fold = util.splitData(X_local,y,n_split=n_fold)
+
+            whole_training,whole_test = svc_loop(k_fold,verbose=verbose)
+            chans_training.append(np.mean(whole_training,axis =1))
+            chans_test.append(np.mean(whole_test,axis = 1))
+
+        chans_training=np.transpose(np.array(chans_training))  # (clfs,chans)
+        chans_test=np.transpose(np.array(chans_test))
+
+
+        sub_training.append(chans_training) #(subsample,clfs,chans)
+        sub_test.append(chans_test)   
+
+
+        print('subbb')
+        print('training...')
+        print(np.array(sub_training).shape)
+        print('test....')
+        print(np.array(sub_test).shape)
+
+    sub_training = np.array(sub_training)
+    sub_test     = np.array(sub_test)
+    ## Reshaping for plotting purpose
+    sub_training=np.mean(sub_training,0) 
+    sub_test    =np.mean(sub_test,0)
+
+    print('subtraining...')
+    print(sub_training.shape)
+    performance = np.vstack((sub_training,sub_test))
+
+    return performance #(trainings+tests,num_iteration)
+
+def flatten_features(X):
+    shape = X.shape
+    X = X.reshape(shape[0],-1)
+    return X
+
+def main():
+    on_path = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed/Features/On/freq_ONpPR_ffefspm_S317.mat'
+    mw_path = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed/Features/MW/freq_WMpPR_ffefspm_S317.mat'
+    saving_path = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed/Accuracy'
+    #############################
+    # First Dimension: Channels #
+    #############################
+
+    # subSamples = getSubsampledFeatures(on_path,mw_path,40,num_fold=10)
+    subSamples = getSubsampledFeatures(on_path,mw_path,40,num_fold=10)
+    chans_performance = performance_subsamples_as_func(subSamples,1,5,verbose=False)
+
+    chans=list(range(1,65))
+    titles = ['Linear SVM','Polinomial SVM','rbf SVM']*2
+    sub_nums = [231,232,233,234,235,236]
+    x_label = 'Channels'
+    y_label = 'Classification Performance(accuracy)'
+    labels = ['Training']*3+['Test']*3
+
+    plt.figure();
+    plt.suptitle('SVM as a function of Channels')
+
+    linear    = list(chans_performance[3])
+    polynomial= list(chans_performance[4])
+    rbf       = list(chans_performance[5])
+
+    # saving variables to .mat file
+    # with cd(saving_path):
+    #     saving_dic = {'linear':linear,'polynomial':polynomial,'rbf':rbf}
+    #     savemat('testing_accuracy.mat',saving_dic)       
+        
+    # input('Done')
     
-    for X_train, y_train, X_test, y_test in splitter:
-        lin_clf = SVC(kernel='linear',C=0.1,class_weight='balanced',)
-        pol_clf = SVC(kernel ='poly', C=1,class_weight='balanced',degree=10)
-        rbf_clf = SVC(kernel='rbf', C=0.1,class_weight='balanced')
-
-        clfs = [lin_clf,pol_clf,rbf_clf]
-        for clf in clfs:
-            clf.fit(X_train,y_train)
-            y_pred = clf.predict(X_test)
-            training_accuracy=accuracy_score(y_train,clf.predict(X_train))
-            test_accuracy = accuracy_score(y_test,y_pred)
-            print('------------------')
-            print(clf)
-            print('training accuracy')
-            print(training_accuracy)
-            print('test accuracy')
-            print(test_accuracy)
-            print('Confusion Matrix')
-            print(confusion_matrix(y_test,y_pred))
+    plot_scatters(chans,chans_performance,titles,sub_nums,x_label,y_label,regression =False,labels=labels)
     
-    # Will tune later
+    #########################
+    # Second dim: Frequency #
+    #########################
+    subSamples = getSubsampledFeatures(on_path,mw_path,40,num_fold=10)
+
+    freqs_performance = performance_subsamples_as_func(subSamples,2,5,verbose=False)
+    
+
+    freqs=np.linspace(0,40,len(freqs_performance[0]))
+    titles = ['Linear SVM','Polinomial SVM','rbf SVM']*2
+    sub_nums = [231,232,233,234,235,236]
+    x_label = 'Frequency'
+    y_label = 'Classification Performance(accuracy)'
+    labels = ['Training']*3+['Test']*3
+
+    plt.figure();
+    plt.suptitle('SVM as a function of Frequency')
+    print(freqs.shape)
+    print(freqs_performance.shape)
+    plot_scatters(freqs,freqs_performance,titles,sub_nums,x_label,y_label,regression =False,labels=labels,markersize=3)
+
+    ###################
+    # Third dim: time #
+    ###################
+    
+    # subSamples = getSubsampledFeatures(on_path,mw_path,40,num_fold=10)
+    # time_performance = performance_subsamples_as_func(subSamples,3,5,verbose=False)
+    
+
+    # time= list(range(5))
+    # titles = ['Linear SVM','Polinomial SVM','rbf SVM']*2
+    # sub_nums = [231,232,233,234,235,236]
+    # x_label = 'Time Window'
+    # y_label = 'Classification Performance(accuracy)'
+    # labels = ['Training']*3+['Test']*3
+
+    # plt.figure();
+    # plt.suptitle('SVM as a function of Time')
+
+    # plot_scatters(time,time_performance,titles,sub_nums,x_label,y_label,regression =False,labels=labels)
+
+    # subSamples = getWholeFeatures(on_path,mw_path,30)
+    # whole_performance = performance_subsamples_as_func(subSamples,0,5,verbose=True)
+    plt.show()
+
+
+
 
 
 if __name__ == "__main__":
