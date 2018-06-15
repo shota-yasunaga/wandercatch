@@ -13,9 +13,7 @@ from sklearn.preprocessing import scale
 from sklearn.metrics import f1_score
 from scipy.io import savemat
 
-
 def tune(X_train, y_train, scoring):
-    
     # Number of trees in random forest
     n_estimators = [int(x) for x in np.linspace(start = 200, stop = 2000, num = 10)]
     # Number of features to consider at every split
@@ -48,6 +46,65 @@ def tune(X_train, y_train, scoring):
     rf_random.fit(X_train, y_train)
     return rf_random.best_params_, rf_random.best_score_
 
+class chooseFeatureSVM(object):
+    """docstring for chooseFeatureSVM"""
+    def __init__(self, clfs, as_func_dim):
+        super(chooseFeatureSVM, self).__init__()
+        self.arg = arg
+        self.clfs= clfs
+        self.as_func_dim = as_func_dim
+        self.accuracy_mean  = []
+        self.accuracy_whole = 
+    def fit(self,X,y):
+        run_multiple_clfs()
+
+    def run_multiple_clfs(X_train,k_fold,accuracy_measure_func=accuracy_score,verbose=True,return_type='mean',**kwargs):
+    clf_training = []
+    clf_test     = []
+    for clf in self.clfs:
+        clf.fit()
+        training,test = k_fold_loop(clf,k_fold,accuracy_measure_func,verbose,return_type,kwargs)
+        clf_training.append(training)
+        clf_test.append(test)
+
+    return clf_training,clf_test #(clfs,) if mean, (clfs,num_fold) if all
+
+
+
+
+def k_fold_loop(clf,k_fold,accuracy_measure_func=accuracy_score,verbose=True,return_type = 'mean',**kwargs):
+    training_list = []
+    test_list     = []
+    for X_train,y_train,X_test,y_test in k_fold:
+        clf.fit(X_train,y_train)
+        y_pred = clf.predict(X_test)
+        training_accuracy = accuracy_measure_func(y_train,clf.predict(X_train),kwargs)
+        test_accuracy     = accuracy_measure_func(y_test,y_pred,kwargs)
+
+        training_list.append(training_accuracy)
+        test_list.append(test_accuracy)
+        if verbose:
+            print('------------------')
+            print(clf)
+            print('training accuracy score')
+            print(training_accuracy)
+            print('test accuracy score')
+            print(test_accuracy)
+            print('Confusion Matrix')
+            print(confusion_matrix(y_test,y_pred))
+
+
+    if return_type == 'mean':
+        return np.mean(np.array(training_list)),np.mean((np.array(test_list))) #Single values
+    elif return_type == 'all':
+        return np.array(training_list),np.array(test_list) #(num_fold,)
+    else:
+        error('return_type',return_type,'not definied')
+
+
+def run_subSamples():
+    pass
+
 def svc_loop(k_fold,verbose=True):
     whole_training = []
     whole_test     = []
@@ -70,7 +127,6 @@ def svc_loop(k_fold,verbose=True):
             # test_accuracy = f1_score(y_test,y_pred,average="weighted")
             training_accuracy = accuracy_score(y_train,clf.predict(X_train))
             test_accuracy     = accuracy_score(y_test,y_pred)
-            
             training_list.append(training_accuracy)
             test_list.append(test_accuracy)
             if verbose:
@@ -95,8 +151,13 @@ def svc_loop(k_fold,verbose=True):
     # (clfs,trials)
     return whole_training,whole_test
 
+def run_subSamples(subSamples,as_func_dim,n_fold,verbose=True):
+    for X,y in subSamples:
+    pass
 
 def performance_subsamples_as_func(subSamples,as_func_dim,n_fold,verbose=False):
+    '''
+    '''
     sub_training=[]
     sub_test    =[]
     for X,y in subSamples:
@@ -159,8 +220,10 @@ def flatten_features(X):
     return X
 
 def main():
+    # Input
     on_path = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed/New_Features/On/freq_ONpPR_ffefspm_S317.mat'
     mw_path = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed/New_Features/MW/freq_WMpPR_ffefspm_S317.mat'
+    # Output
     saving_var_path = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed/Accuracy'
     saving_plot_path = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed/New_Plot_classification'
 
@@ -171,52 +234,53 @@ def main():
     # First Dimension: Channels #
     #############################
 
-    # # subSamples = getSubsampledFeatures(on_path,mw_path,40,num_fold=10)
-    # subSamples = getSubsampledFeatures(on_path,mw_path,40,num_fold=num_fold)
-    # chans_performance = performance_subsamples_as_func(subSamples,1,5,verbose=False)
+    # subSamples = getSubsampledFeatures(on_path,mw_path,40,num_fold=10)
+    subSamples = getSubsampledFeatures(on_path,mw_path,40,num_fold=num_fold)
+    chans_performance = performance_subsamples_as_func(subSamples,1,5,verbose=False)
 
-    # chans=list(range(1,65))
-    # titles = ['Linear SVM (C='+C[0] +')','Polinomial SVM (C='+C[1]+')','rbf SVM (C='+C[2]+')']*2
-    # sub_nums = [231,232,233,234,235,236]
-    # x_label = 'Channels'
-    # y_label = 'Classification Performance(accuracy)'
-    # labels = ['Training']*3+['Test']*3
+    chans=list(range(1,65))
+    titles = ['Linear SVM (C='+C[0] +')','Polinomial SVM (C='+C[1]+')','rbf SVM (C='+C[2]+')']*2
+    sub_nums = [231,232,233,234,235,236]
+    x_label = 'Channels'
+    y_label = 'Classification Performance(accuracy)'
+    labels = ['Training']*3+['Test']*3
 
-    # plt.figure(figsize=(15,10));
-    # plt.suptitle('SVM as a function of Channels')
+    plt.figure(figsize=(15,10));
+    plt.suptitle('SVM as a function of Channels')
 
-    # linear    = list(chans_performance[3])
-    # polynomial= list(chans_performance[4])
-    # rbf       = list(chans_performance[5])
+    linear    = list(chans_performance[3])
+    polynomial= list(chans_performance[4])
+    rbf       = list(chans_performance[5])
 
-    # # saving variables to .mat file
-    # with cd(saving_var_path):
-    #     saving_dic = {'linear':linear,'polynomial':polynomial,'rbf':rbf}
-    #     savemat(C[0]+'-'+C[1]+'-'+C[2]+str(num_fold)+'Folds'+'.mat',saving_dic)
+    # saving variables to .mat file
+    with cd(saving_var_path):
+        saving_dic = {'linear':linear,'polynomial':polynomial,'rbf':rbf}
+        savemat(C[0]+'-'+C[1]+'-'+C[2]+str(num_fold)+'Folds'+'.mat',saving_dic)
     
     
-    # # Saving the figure 
-    # plot_scatters(chans,chans_performance,titles,sub_nums,x_label,y_label,regression =False,labels=labels)
-    # with cd(saving_plot_path):
-    #     plt.savefig(C[0]+'-'+C[1]+'-'+C[2]+'_'+str(num_fold)+'Folds'+'_chans.png')
-    # #########################
-    # # Second dim: Frequency #
-    # #########################
-    # subSamples = getSubsampledFeatures(on_path,mw_path,40,num_fold=num_fold)
+    # Saving the figure 
+    plot_scatters(chans,chans_performance,titles,sub_nums,x_label,y_label,regression =False,labels=labels)
+    with cd(saving_plot_path):
+        plt.savefig(C[0]+'-'+C[1]+'-'+C[2]+'_'+str(num_fold)+'Folds'+'_chans.png')
 
-    # freqs_performance = performance_subsamples_as_func(subSamples,2,5,verbose=False)
+    #########################
+    # Second dim: Frequency #
+    #########################
+    subSamples = getSubsampledFeatures(on_path,mw_path,40,num_fold=num_fold)
+
+    freqs_performance = performance_subsamples_as_func(subSamples,2,5,verbose=False)
     
 
-    # freqs=np.linspace(0,40,len(freqs_performance[0]))
+    freqs=np.linspace(0,40,len(freqs_performance[0]))
     
-    # x_label = 'Frequency'
+    x_label = 'Frequency'
 
-    # plt.figure(figsize=(15,10));
-    # plt.suptitle('SVM as a function of Frequency')
-    # print(freqs.shape)
-    # print(freqs_performance.shape)
-    # plot_scatters(freqs,freqs_performance,titles,sub_nums,x_label,y_label,regression =False,labels=labels,markersize=3)
-    # with cd(saving_plot_path):
+    plt.figure(figsize=(15,10));
+    plt.suptitle('SVM as a function of Frequency')
+    print(freqs.shape)
+    print(freqs_performance.shape)
+    plot_scatters(freqs,freqs_performance,titles,sub_nums,x_label,y_label,regression =False,labels=labels,markersize=3)
+    with cd(saving_plot_path):
     #     plt.savefig(C[0]+'-'+C[1]+'-'+C[2]+str(num_fold)+'Folds'+'_freqs.png')
     ###################
     # Third dim: time #
@@ -241,8 +305,6 @@ def main():
     subSamples = getWholeFeatures(on_path,mw_path,30)
     whole_performance = performance_subsamples_as_func(subSamples,0,5,verbose=True)
     plt.show()
-
-
 
 if __name__ == "__main__":
     main()
