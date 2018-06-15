@@ -37,11 +37,15 @@ def plot_cond(conds_dir,cond,loc_path,color,label_itr,end_freq=30):
             input('understood?')
         subplot_values +=1
 
-def plot_all_epochs(power_path,cond,loc_path,color,end_freq=30,chan='Oz'):
+def plot_all_epochs(power_path,cond,loc_path,color,end_freq=30,chan='Oz',subplot=False):
+    '''
+    In the future, allow subplot optino and ppt option
+    '''
     power_itr = folderIterator(power_path)
     loc_itr   = folderIterator(loc_path)
     subplot_values=1
     for power_file,loc_file in zip(power_itr,loc_itr):
+        print(power_file)
         features,freqVec = readOneFeatures(power_file,end_freq)
         print('Dimension of all of the powers')
         print(features.shape) # sanity check
@@ -52,18 +56,13 @@ def plot_all_epochs(power_path,cond,loc_path,color,end_freq=30,chan='Oz'):
         if (chan in chanlocs):
             chan_ind = chanlocs.index(chan)
             chan_powers = features[:,chan_ind,:]
-            print('Power of a channel')
-            print(chan_powers.shape) # Sanity check
             
             labels_count = features.shape[0]
-
+            
+        
             mean = np.mean(chan_powers,0)
 
             std = np.std(chan_powers,axis=0)
-            print('mean')
-            print(mean.shape)
-            print('STD Shape')
-            print(std.shape)
 
             plt.plot(freqVec, mean,color,label=cond+':'+str(labels_count)+'Epochs')
             plt.plot(freqVec,mean-std,color)
@@ -71,7 +70,7 @@ def plot_all_epochs(power_path,cond,loc_path,color,end_freq=30,chan='Oz'):
 
             plt.legend(loc='upper right', shadow=True, fontsize='x-large')
             power_file = power_file.decode("utf-8")
-            plt.title('Participant: '+ power_file[-7:-4])
+            plt.title('Participant: '+ power_file[-7:-4]+'\n Chan: '+chan)
         else:
             print(files[0], ' did not have ', chan) 
             input('understood?')
@@ -100,7 +99,7 @@ plt.suptitle('Power Spectrum: ON vs MW')
 
 for cond,color in zip(conditions,colors):
     power_path = conds_dir+'/'+cond
-    plot_all_epochs(power_path,cond,loc_dir,color)
+    plot_all_epochs(power_path,cond,loc_dir,color,chan='C5')
 
 
 

@@ -56,9 +56,9 @@ def svc_loop(k_fold,verbose=True):
         # pol_clf = SVC(kernel ='poly', C=1,class_weight='balanced',degree=10)
         # rbf_clf = SVC(kernel='rbf', C=0.1,class_weight='balanced')
 
-        lin_clf = SVC(kernel='linear',C=0.001)
-        pol_clf = SVC(kernel ='poly', C=1,degree=3)
-        rbf_clf = SVC(kernel='rbf', C=1)
+        lin_clf = SVC(kernel='linear',C=0.005)
+        pol_clf = SVC(kernel ='poly', C=5,degree=3)
+        rbf_clf = SVC(kernel='rbf', C=5)
         #clfs = [lin_clf,pol_clf,rbf_clf]
         clfs= [lin_clf,pol_clf,rbf_clf]
         training_list = []
@@ -100,6 +100,8 @@ def performance_subsamples_as_func(subSamples,as_func_dim,n_fold,verbose=False):
     sub_training=[]
     sub_test    =[]
     for X,y in subSamples:
+        print('subsample shape')
+        print(X.shape)
         # First dim: channels 
         chans_training = [] #(chans,clfs)
         chans_test     = []
@@ -138,11 +140,6 @@ def performance_subsamples_as_func(subSamples,as_func_dim,n_fold,verbose=False):
         sub_test.append(chans_test)   
 
 
-        print('subbb')
-        print('training...')
-        print(np.array(sub_training).shape)
-        print('test....')
-        print(np.array(sub_test).shape)
 
     sub_training = np.array(sub_training)
     sub_test     = np.array(sub_test)
@@ -162,86 +159,88 @@ def flatten_features(X):
     return X
 
 def main():
-    on_path = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed/Features/On/freq_ONpPR_ffefspm_S317.mat'
-    mw_path = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed/Features/MW/freq_WMpPR_ffefspm_S317.mat'
-    saving_path = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed/Accuracy'
+    on_path = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed/New_Features/On/freq_ONpPR_ffefspm_S317.mat'
+    mw_path = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed/New_Features/MW/freq_WMpPR_ffefspm_S317.mat'
+    saving_var_path = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed/Accuracy'
+    saving_plot_path = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed/New_Plot_classification'
+
+    C = [0.005,5,5]
+    C = [str(C[0]),str(C[1]),str(C[2])]
+    num_fold = 10
     #############################
     # First Dimension: Channels #
     #############################
 
-    # subSamples = getSubsampledFeatures(on_path,mw_path,40,num_fold=10)
-    subSamples = getSubsampledFeatures(on_path,mw_path,40,num_fold=10)
-    chans_performance = performance_subsamples_as_func(subSamples,1,5,verbose=False)
+    # # subSamples = getSubsampledFeatures(on_path,mw_path,40,num_fold=10)
+    # subSamples = getSubsampledFeatures(on_path,mw_path,40,num_fold=num_fold)
+    # chans_performance = performance_subsamples_as_func(subSamples,1,5,verbose=False)
 
-    chans=list(range(1,65))
-    titles = ['Linear SVM','Polinomial SVM','rbf SVM']*2
-    sub_nums = [231,232,233,234,235,236]
-    x_label = 'Channels'
-    y_label = 'Classification Performance(accuracy)'
-    labels = ['Training']*3+['Test']*3
+    # chans=list(range(1,65))
+    # titles = ['Linear SVM (C='+C[0] +')','Polinomial SVM (C='+C[1]+')','rbf SVM (C='+C[2]+')']*2
+    # sub_nums = [231,232,233,234,235,236]
+    # x_label = 'Channels'
+    # y_label = 'Classification Performance(accuracy)'
+    # labels = ['Training']*3+['Test']*3
 
-    plt.figure();
-    plt.suptitle('SVM as a function of Channels')
+    # plt.figure(figsize=(15,10));
+    # plt.suptitle('SVM as a function of Channels')
 
-    linear    = list(chans_performance[3])
-    polynomial= list(chans_performance[4])
-    rbf       = list(chans_performance[5])
+    # linear    = list(chans_performance[3])
+    # polynomial= list(chans_performance[4])
+    # rbf       = list(chans_performance[5])
 
-    # saving variables to .mat file
-    # with cd(saving_path):
+    # # saving variables to .mat file
+    # with cd(saving_var_path):
     #     saving_dic = {'linear':linear,'polynomial':polynomial,'rbf':rbf}
-    #     savemat('testing_accuracy.mat',saving_dic)       
-        
-    # input('Done')
+    #     savemat(C[0]+'-'+C[1]+'-'+C[2]+str(num_fold)+'Folds'+'.mat',saving_dic)
     
-    plot_scatters(chans,chans_performance,titles,sub_nums,x_label,y_label,regression =False,labels=labels)
     
-    #########################
-    # Second dim: Frequency #
-    #########################
-    subSamples = getSubsampledFeatures(on_path,mw_path,40,num_fold=10)
+    # # Saving the figure 
+    # plot_scatters(chans,chans_performance,titles,sub_nums,x_label,y_label,regression =False,labels=labels)
+    # with cd(saving_plot_path):
+    #     plt.savefig(C[0]+'-'+C[1]+'-'+C[2]+'_'+str(num_fold)+'Folds'+'_chans.png')
+    # #########################
+    # # Second dim: Frequency #
+    # #########################
+    # subSamples = getSubsampledFeatures(on_path,mw_path,40,num_fold=num_fold)
 
-    freqs_performance = performance_subsamples_as_func(subSamples,2,5,verbose=False)
+    # freqs_performance = performance_subsamples_as_func(subSamples,2,5,verbose=False)
     
 
-    freqs=np.linspace(0,40,len(freqs_performance[0]))
-    titles = ['Linear SVM','Polinomial SVM','rbf SVM']*2
-    sub_nums = [231,232,233,234,235,236]
-    x_label = 'Frequency'
-    y_label = 'Classification Performance(accuracy)'
-    labels = ['Training']*3+['Test']*3
+    # freqs=np.linspace(0,40,len(freqs_performance[0]))
+    
+    # x_label = 'Frequency'
 
-    plt.figure();
-    plt.suptitle('SVM as a function of Frequency')
-    print(freqs.shape)
-    print(freqs_performance.shape)
-    plot_scatters(freqs,freqs_performance,titles,sub_nums,x_label,y_label,regression =False,labels=labels,markersize=3)
-
+    # plt.figure(figsize=(15,10));
+    # plt.suptitle('SVM as a function of Frequency')
+    # print(freqs.shape)
+    # print(freqs_performance.shape)
+    # plot_scatters(freqs,freqs_performance,titles,sub_nums,x_label,y_label,regression =False,labels=labels,markersize=3)
+    # with cd(saving_plot_path):
+    #     plt.savefig(C[0]+'-'+C[1]+'-'+C[2]+str(num_fold)+'Folds'+'_freqs.png')
     ###################
     # Third dim: time #
     ###################
     
-    # subSamples = getSubsampledFeatures(on_path,mw_path,40,num_fold=10)
-    # time_performance = performance_subsamples_as_func(subSamples,3,5,verbose=False)
+    subSamples = getSubsampledFeatures(on_path,mw_path,40,num_fold=10)
+    time_performance = performance_subsamples_as_func(subSamples,3,5,verbose=False)
     
 
-    # time= list(range(5))
-    # titles = ['Linear SVM','Polinomial SVM','rbf SVM']*2
-    # sub_nums = [231,232,233,234,235,236]
-    # x_label = 'Time Window'
-    # y_label = 'Classification Performance(accuracy)'
-    # labels = ['Training']*3+['Test']*3
+    time= list(range(5))
+    titles = ['Linear SVM','Polinomial SVM','rbf SVM']*2
+    sub_nums = [231,232,233,234,235,236]
+    x_label = 'Time Window'
+    y_label = 'Classification Performance(accuracy)'
+    labels = ['Training']*3+['Test']*3
 
-    # plt.figure();
-    # plt.suptitle('SVM as a function of Time')
+    plt.figure();
+    plt.suptitle('SVM as a function of Time')
 
-    # plot_scatters(time,time_performance,titles,sub_nums,x_label,y_label,regression =False,labels=labels)
+    plot_scatters(time,time_performance,titles,sub_nums,x_label,y_label,regression =False,labels=labels)
 
-    # subSamples = getWholeFeatures(on_path,mw_path,30)
-    # whole_performance = performance_subsamples_as_func(subSamples,0,5,verbose=True)
+    subSamples = getWholeFeatures(on_path,mw_path,30)
+    whole_performance = performance_subsamples_as_func(subSamples,0,5,verbose=True)
     plt.show()
-
-
 
 
 
