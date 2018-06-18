@@ -129,6 +129,8 @@ Functions to conduct eeg data analysis
   ! It only converts the data and channel location (including epochs but not the labels of epochs)
   ! You need to have .xyz file in order to do the loation convertion
 
+- Features Dimension: (conds,channels,freqneucy bins,time bins)
+
 
 
 
