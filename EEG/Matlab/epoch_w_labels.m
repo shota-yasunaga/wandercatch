@@ -15,33 +15,21 @@ clear
 %%%%%%%%%%%%%
 % Edit Here %
 %%%%%%%%%%%%%
-% Directory to the 
-% *Do not put anything except the data under the directory
-
-% behavior
-behavior_dir = '/Users/macbookpro/Dropbox/College/TsuchiyaLab/Behavior_Data';
-
 % EEG data
 % The script is dependent of the fact taht you put S (capital) in front of
 % the number of participants
 % if you want to change it, you need to look at around "strtok"
-eeg_dir      = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/Probes/eeglab_prep';
+eeg_dir      = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/eeglab';
 
 % file, util. Has to have util.m in it. 
 util_dir     = '/Users/macbookpro/Dropbox/College/TsuchiyaLab/wandercatch/';
 
 % path to save data
-on_dir   = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/Probes/On'; % On Task
-mb_dir   = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/Probes/MB'; % Mind Blanking
-mw_dir   = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/Probes/MW'; % Mind Wandering
-off_dir  = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/Probes/Off'; % Off Task
+on_dir   = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed_conds/On'; % On Task
+mb_dir   = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed_conds/MB'; % Mind Blanking
+mw_dir   = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed_conds/MW'; % Mind Wandering
+off_dir  = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed_conds/Off'; % Off Task
 
-% Directory where you want to save the figure
-% saving_dir = '/Users/macbookpro/Dropbox/College/TsuchiyaLab/Plots';
-
-% Partial Mode if set true if you want to run the script even when you
-% don't have equal number of files for behavior and eeg
-partial_mode = true;
 
 %%%%%%%%%%%%%%%%%%%%
 % End of Editting  %
@@ -105,9 +93,7 @@ disp(num_off)
 disp('Name')
 disp(names)
 
-function partial_correction
 
-end
 
 function EEG = select_with_inds(EEG, inds, label,name, saving_path)
     if not(isempty(inds))
