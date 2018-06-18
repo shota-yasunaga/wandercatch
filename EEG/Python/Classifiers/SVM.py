@@ -6,12 +6,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mat2python import getWholeFeatures,getSubsampledFeatures,getFakeData
 from plot_methods import plot_scatters
+from scipy.io import savemat
+
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import scale
 from sklearn.metrics import f1_score
-from scipy.io import savemat
+from sklearn.model_selection import GridSearchCV
+
 
 
 def tune(X_train, y_train, scoring):
@@ -167,6 +170,21 @@ def main():
     C = [0.005,5,5]
     C = [str(C[0]),str(C[1]),str(C[2])]
     num_fold = 10
+
+    import pandas as pan
+    subSamples = getSubsampledFeatures(on_path,mw_path,40,num_fold=1)
+    svc = SVC(kernel='linear')
+    c_values = [10**x for x in range(-5,4)]
+    parameters = {'C':c_values}
+    clf = GridSearchCV(svc, parameters)
+    for X,y in subSamples:
+        
+        X = X[:,25,:,:]
+        X = flatten_features(X)
+        clf.fit(X,y)
+        d_frame = pan.DataFrame(clf.cv_results_)
+    print(d_frame)
+
     #############################
     # First Dimension: Channels #
     #############################
@@ -222,25 +240,25 @@ def main():
     # Third dim: time #
     ###################
     
-    subSamples = getSubsampledFeatures(on_path,mw_path,40,num_fold=10)
-    time_performance = performance_subsamples_as_func(subSamples,3,5,verbose=False)
+    # subSamples = getSubsampledFeatures(on_path,mw_path,40,num_fold=10)
+    # time_performance = performance_subsamples_as_func(subSamples,3,5,verbose=False)
     
 
-    time= list(range(5))
-    titles = ['Linear SVM','Polinomial SVM','rbf SVM']*2
-    sub_nums = [231,232,233,234,235,236]
-    x_label = 'Time Window'
-    y_label = 'Classification Performance(accuracy)'
-    labels = ['Training']*3+['Test']*3
+    # time= list(range(5))
+    # titles = ['Linear SVM','Polinomial SVM','rbf SVM']*2
+    # sub_nums = [231,232,233,234,235,236]
+    # x_label = 'Time Window'
+    # y_label = 'Classification Performance(accuracy)'
+    # labels = ['Training']*3+['Test']*3
 
-    plt.figure();
-    plt.suptitle('SVM as a function of Time')
+    # plt.figure();
+    # plt.suptitle('SVM as a function of Time')
 
-    plot_scatters(time,time_performance,titles,sub_nums,x_label,y_label,regression =False,labels=labels)
+    # plot_scatters(time,time_performance,titles,sub_nums,x_label,y_label,regression =False,labels=labels)
 
-    subSamples = getWholeFeatures(on_path,mw_path,30)
-    whole_performance = performance_subsamples_as_func(subSamples,0,5,verbose=True)
-    plt.show()
+    # subSamples = getWholeFeatures(on_path,mw_path,30)
+    # whole_performance = performance_subsamples_as_func(subSamples,0,5,verbose=True)
+    # plt.show()
 
 
 
