@@ -1,7 +1,8 @@
 import os
 import numpy as np
-from sklearn.model_selection import StratifiedShuffleSplit
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import StratifiedShuffleSplit, StratifiedKFold
+from sklearn.utils import resample 
+from collections import Counter
 
 
 class cd:
@@ -27,6 +28,10 @@ def splitData(X, y,n_split=10):
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
         yield X_train, y_train, X_test, y_test
+
+
+
+
 def KFolder(X,y,n_splits=3):
     '''iterator that gives the train and test data for the X,y
        with the n_splits stratified fold

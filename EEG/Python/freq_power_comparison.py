@@ -58,10 +58,8 @@ def plot_all_epochs(power_path,cond,loc_path,color,end_freq=30,chan='Oz',subplot
             chan_powers = features[:,chan_ind,:]
             
             labels_count = features.shape[0]
-            
         
             mean = np.mean(chan_powers,0)
-
             std = np.std(chan_powers,axis=0)
 
             plt.plot(freqVec, mean,color,label=cond+':'+str(labels_count)+'Epochs')

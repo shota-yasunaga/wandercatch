@@ -19,13 +19,7 @@ clear
 % *Do not put anything except the data under the directory
 
 % behavior
-label_dir = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/Probes/Labels';
-
-% EEG data
-% The script is dependent of the fact taht you put S (capital) in front of
-% the number of participants
-% if you want to change it, you need to look at around "strtok"
-eeg_dir      = '/Users/macbookpro/Documents/Tsuchiya_Lab_Data/Probes/eeglab';
+label_dir = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Labels_all';
 
 % file, util. Has to have util.m in it. 
 util_dir     = '/Users/macbookpro/Dropbox/College/TsuchiyaLab/wandercatch/';
@@ -37,7 +31,6 @@ util_dir     = '/Users/macbookpro/Dropbox/College/TsuchiyaLab/wandercatch/';
 %%%%%%%%%%%%
 % Constant %
 %%%%%%%%%%%%
-TRIALS_THRESH = 10;
 
 %%
 %%%%%%%%%%%%%%
@@ -45,8 +38,6 @@ TRIALS_THRESH = 10;
 %%%%%%%%%%%%%%
 %util
 addpath(util_dir)
-
-
 
 
 %%
@@ -70,23 +61,40 @@ for i = 1:num_files
 end
 
 num_labels(:,4) =num_labels(:,2) + num_labels(:,3); % MW + MB
-%%
-above_thresh = num_labels > TRIALS_THRESH;
 
-mw_vs_mb = sum(above_thresh(:,2) & above_thresh(:,3));
-on_vs_mw = sum(above_thresh(:,1) & above_thresh(:,2));
-on_vs_mb = sum(above_thresh(:,1) & above_thresh(:,3));
-on_vs_other = sum(above_thresh(:,1) & above_thresh(:,4));
 
+num_available_ppts = [];
+ind = 1;
+for trials_thresh = 2:30
+    disp(getAboveThresh(num_labels,trials_thresh))
+    num_available_ppts(ind,:) = getAboveThresh(num_labels,trials_thresh);
+    ind = ind +1;
+end
+
+disp(num_available_ppts)
 
 figure;
-bar([mw_vs_mb,on_vs_mw,on_vs_mb,on_vs_other])
-set(gca,'xticklabel',{'MW-MB', 'On-MW','On-MB','On-Off'});
+title('Number of participants available according to the threshold of epochs available per ppt')
+titles = {'MW vs MB', 'On vs MW', 'On vs MB','On vs Off'};
+for i = 1:4
+    subplot(2,2,i)
+    scatter(2:30,num_available_ppts(:,i))
+    title(titles{i})
+    xlabel('Threshold of available epochs')
+    ylabel('Number of available ppts')
+    ylim([0,20])
+end
+    
 
-figure;
-bar(sum(num_labels,1))
-set(gca,'xticklabel',{'On', 'MW','MB','Off'});
-
-
+%% 
+function [whole_matrix] = getAboveThresh(num_labels,trials_thresh); 
+    above_thresh = num_labels > trials_thresh;
+    mw_vs_mb = sum(above_thresh(:,2) & above_thresh(:,3));
+    on_vs_mw = sum(above_thresh(:,1) & above_thresh(:,2));
+    on_vs_mb = sum(above_thresh(:,1) & above_thresh(:,3));
+    on_vs_other = sum(above_thresh(:,1) & above_thresh(:,4));
+    
+    whole_matrix = [mw_vs_mb,on_vs_mw,on_vs_mb,on_vs_other];
+end
 
 

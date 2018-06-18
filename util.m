@@ -41,6 +41,10 @@ function labels = getProbeLabels(behave_file)
     labels = all_probe_responses(2:7:end,9);
 end
 
+function chan_locs = readChanLocs(chan_file)
+    
+end
+
 function result_path = constructPath(parent,child)
     % construct path from the parent and child
     % this just takes care of / insertion

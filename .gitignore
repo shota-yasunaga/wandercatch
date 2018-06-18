@@ -11,4 +11,4 @@ Behavior/fix_303.m
 
 #Ignoring python cache
 *.pyc
-__pycache__
+/EEG/Python/__pycache__/*

@@ -64,3 +64,12 @@ Channels Removed
     12    21    26    11
     [11×1 double]
 
+
+
+When processing power spectrum, remove ppt 10
+
+under Shard:
+params 0.1,10,10
+
+Features … wrong fft(wrong window size)
+New_Features… right fft(right window size)
