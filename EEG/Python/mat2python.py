@@ -3,14 +3,10 @@ import os
 import numpy as np
 import scipy.io as io # data 
 from collections import Counter
-
 # scikitlearn
 import sklearn.utils as sku
 from sklearn.utils import resample
 import sklearn.preprocessing as prep
-
-
-
 
 def getFreqValuesVec(file_path):
     '''
@@ -48,6 +44,21 @@ def getSubsampledFeatures(cond0_path,cond1_path,max_freq,num_fold):
         resampled0 = resample(features0,replace=False,n_samples=num_samples)
         resampled1 = resample(features1,replace=False,n_samples=num_samples)
         features   = np.vstack((resampled0,resampled1))
+
+        yield features,labels
+
+    
+def getFeaturesItr(cond0_path,cond1_path,max_freq,num_fold):
+    features0,freqVec = readOneFeatures(cond0_path,max_freq)
+    features1,freqVec = readOneFeatures(cond1_path,max_freq)
+
+    f0_num = features0.shape[0]
+    f1_num = features1.shape[0]
+
+    num_samples = min(len(features0),len(features1))
+    labels  = np.concatenate((np.zeros(f0_num),np.ones(f1_num)))
+    for i in range(num_fold):
+        features   = np.vstack((features0,features1))
 
         yield features,labels
 
