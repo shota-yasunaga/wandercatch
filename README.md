@@ -133,7 +133,6 @@ Functions to conduct eeg data analysis
 
 
 
-
 #### Python
 - fit_fooof_script.py
 
@@ -153,6 +152,10 @@ Functions to conduct eeg data analysis
 
   to compare the peak (including freqneucy tags and alpha) values between labels(On,MW,MB,etc)
 
+- flicker_analysis.py
+  
+  script to compare the values of the flickers power values
+
 ##### Helper Functions
 
 - fooof_vars_methods.py
@@ -165,14 +168,32 @@ Functions to conduct eeg data analysis
 
 - mat2python.py
 
-  helper methos to read matlab variables and convert it to be able to use for the python script. It has usefult iterators, too. å
+  helper methos to read matlab variables and convert it to be able to use for the python script. It has usefult iterators, too. 
 
 - plot_methods.py
   
   helper methods for plooting scatter plots
 
 
+## Classifiers
 
+TODO: I need to restructure this because the function names are not appropriate
+
+- SVM.py
+  This has all of the classes that I'm using to verify the classifiers.
+
+- SVM_all_pts_together.py
+  
+  run SVM with all of the participants' features together. 
+
+- SVM_ppts_loop.py
+
+  run classifications on different participants in a loop
+
+- find_coefficients.py
+
+  Run SVM with linear kernel and see the coefficients 
+  
 
 
 #### Behavioral Data
