@@ -252,8 +252,8 @@ class clfFolder(ClfItrFolder):
             y_pred = clf.predict(X_test)
             # training_accuracy=f1_score(y_train,clf.predict(X_train),average="weighted")
             # test_accuracy = f1_score(y_test,y_pred,average="weighted")
-            training_accuracy = self.accuracy_measure_func(y_train,clf.predict(X_train),self.kwargs)
-            test_accuracy     = self.accuracy_measure_func(y_test,y_pred,self.kwargs)
+            training_accuracy = self.accuracy_measure_func(y_train,clf.predict(X_train),**self.kwargs)
+            test_accuracy     = self.accuracy_measure_func(y_test,y_pred,**self.kwargs)
             self.score_list.append((training_accuracy,test_accuracy))
             if self.verbose:
                 print(self.accuracy_measure_func)
@@ -283,8 +283,8 @@ class subSampler(ClfItrFolder):
         '''
         self.subsample_func = subsample_func
 
-    def init_sub_sample(self,on_path,mw_path,max_freq):
-        self.sub_sample = self.subsample_func(on_path,mw_path,max_freq,self.num_sub_samples)
+    def init_sub_sample(self,on_path,mw_path,max_freq,**kwargs):
+        self.sub_sample = self.subsample_func(on_path,mw_path,max_freq,self.num_sub_samples,**kwargs)
     def score(self):
         self.init_score_list()
         if self.sub_sample == None:
