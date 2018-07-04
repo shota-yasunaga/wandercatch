@@ -73,3 +73,20 @@ params 0.1,10,10
 
 Features … wrong fft(wrong window size)
 New_Features… right fft(right window size)
+
+↑deleted old ones. So, there is only New_Features
+
+My directory
+
+eeglab…
+eeglab_prep… preprocessed leg -> removed bad channels/interpolated/averaged referenced
+MB/MW/On/Off　ちょっと待ってここ覚えてないんですけど既に
+Plot_all_conds
+    MW/On… 覚えてないんだなぁ
+    Plots… empty
+Plot_Classification
+    10Subsamples_empty… to make directry tree
+    AllPpt…  
+    s(Number)… mainly to tun classification because of my laziness
+    window(N)_bandwidth_(N)… FFT with window N and bandwidth N, usually bandwidth = 1/window
+

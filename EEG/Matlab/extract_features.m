@@ -15,7 +15,7 @@ conds = {'On','MW'};
 
 % For both
 % for multiple folders it would look like saving_var/folder_name
-saving_var   = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed/Plot_all_conds';
+saving_var   = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed/Features/window10_bandwidth_0.1/';
 
 % file, util. Has to have util.m in it. 
 util_dir     = '/Users/macbookpro/Dropbox/College/TsuchiyaLab/wandercatch/';
@@ -60,6 +60,7 @@ for cond = conds
     num_files      = length(eeg_files);
     start = 1;
     for i = start:num_files %TODO: Put it back to num_files 
+        %                             num_steps,start_frame,end_frame
         loopEpochs(eeg_files{i},current_saving_folder,1,0,10000);            
     end
     start = 1;
@@ -73,6 +74,7 @@ function [spec_steps,freqVec] = get_decomp_values(EEG,num_steps,start_frame, end
     for step = 1:num_steps
         start_step = windows(step);
         end_step   = windows(step+1);
+        % Winsize --> windowsize used by fft. --> decides the resolution
         [eegspecdB,freqVec] = pop_spectopo(EEG, 1, [start_step  end_step], 'EEG' , 'freqrange',[1],'electrodes','off','winsize',5000);
         spec_steps(:,:,step)=eegspecdB; %(electrodes,frequency,
     end

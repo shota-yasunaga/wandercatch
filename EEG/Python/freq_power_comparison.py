@@ -1,10 +1,38 @@
 import os
-from mat2python import getFreqValuesVec,getChanLocs, getNumLabels,folderIterator,readOneFeatures
+from mat2python import getFreqValuesVec,getChanLocs, getNumLabels,folderIterator,readOneFeatures,getSubsampledFeatures
 import numpy as np
 import matplotlib.pyplot as plt
 
-## THIS SCRIPT IS NOT GENERALIZABLE
-## THIS ONLY WORKS FOR THE CASE WHEN THERE ARE 15 PPTS
+
+def normalize_power(power):
+    ''' normalize the power (calculate the relative power against the mean across frequency)
+    input: numpy nd array (1,2,3) If 2, it should be (~, frequency), if 3,(~,~,frequency)
+    output: numpy nd array with the same shape
+    '''
+    print(power.shape)
+    if power.ndim == 1:
+        power /= np.mean(power)
+    elif power.ndim == 2:
+        for i in range(power.shape[0]):
+            power[i,:] = power[i,:]/np.mean(power[i,:])
+    elif power.ndim == 3:
+        for i in range(power.shape[0]):
+            for j in range(power.shape[1]):
+                power[i,j,:] /= np.mean(power[i,j,:])
+
+        # original_shape = power.shape
+        # power = power.reshape((-1,power.shape[-1]))
+        # print(power.shape)
+        # power = np.transpose(power)
+        # print(np.mean(power,axis=0).shape)
+        # power = power /np.mean(power,axis = 0)
+
+        # print(power.shape)
+        # power = np.transpose(power)
+        # power = power.reshape(original_shape)
+        # print(power.shape)
+
+    return power
 
 def plot_cond(conds_dir,cond,loc_path,color,label_itr,end_freq=30):
     '''
@@ -33,10 +61,29 @@ def plot_cond(conds_dir,cond,loc_path,color,label_itr,end_freq=30):
             freq_var = freq_var.decode("utf-8")
             plt.title('Participant: '+ freq_var[-7:-4])
         else:
-            print(files[0], 'did not have Oz') 
+            print(files[0], 'did not have Oz')
             input('understood?')
         subplot_values +=1
 
+
+def plot_all_ppt(cond_dir,conds,loc_path,color,label_itr,end_freq):
+    '''
+    Input:
+        cond_dir:
+        conds:
+        loc_path:
+        color:
+        label_itr:
+        end_freq:
+    Output: 
+        Warnings. It can only do 2 conditions now
+    '''
+    loc_itr = folderIterator(loc_path)
+    c0_itr = folderIterator(cond_dir+'/'+conds[0])
+    c1_itr = folderIterator(cond_dir+'/'+conds[1])
+    for cond0,cond1 in zip(c0_itr,c1_itr):
+        
+    
 def plot_all_epochs(power_path,cond,loc_path,color,end_freq=30,chan='Oz',subplot=False):
     '''
     In the future, allow subplot optino and ppt option
@@ -47,7 +94,7 @@ def plot_all_epochs(power_path,cond,loc_path,color,end_freq=30,chan='Oz',subplot
     for power_file,loc_file in zip(power_itr,loc_itr):
         print(power_file)
         features,freqVec = readOneFeatures(power_file,end_freq)
-        print('Dimension of all of the powers')
+        print('Dimension of all of the powers')     
         print(features.shape) # sanity check
         plt.figure(subplot_values)
         
@@ -55,6 +102,7 @@ def plot_all_epochs(power_path,cond,loc_path,color,end_freq=30,chan='Oz',subplot
         chanlocs = getChanLocs(loc_file)
         if (chan in chanlocs):
             chan_ind = chanlocs.index(chan)
+            # chan_powers = normalize_power(features[:,chan_ind,:])
             chan_powers = features[:,chan_ind,:]
             
             labels_count = features.shape[0]
@@ -69,6 +117,8 @@ def plot_all_epochs(power_path,cond,loc_path,color,end_freq=30,chan='Oz',subplot
             plt.legend(loc='upper right', shadow=True, fontsize='x-large')
             power_file = power_file.decode("utf-8")
             plt.title('Participant: '+ power_file[-7:-4]+'\n Chan: '+chan)
+            plt.xlabel('Frequency (Hz)')
+            plt.ylabel('Power')
         else:
             print(files[0], ' did not have ', chan) 
             input('understood?')
@@ -77,29 +127,33 @@ def plot_all_epochs(power_path,cond,loc_path,color,end_freq=30,chan='Oz',subplot
 # How am I flattening the features
 
 
-loc_dir  = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed/Chanlocs'
-# base_dir   = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/freqValues'
-conds_dir  = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed/Plot_all_conds'
-labels_dir = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Labels_all'
-conditions = ['On', 'MW']
-colors     = ['r','b']
+def main():
+    
+    loc_dir  = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed/Chanlocs'
+    # base_dir   = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/freqValues'
+    conds_dir  = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed/Features'
+    labels_dir = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Labels_all'
+    conditions = ['On', 'MW']
+    colors     = ['r','b']
 
 
-# Plot the baseline(after probe)
-plt.figure()
-plt.suptitle('Power Spectrum: ON vs MW')
-# plot_cond(base_dir,loc_dir,'k')
+    # Plot the baseline(after probe)
+    plt.figure()
+    plt.suptitle('Power Spectrum: ON vs MW')
+    # plot_cond(base_dir,loc_dir,'k')
 
-# for cond,color in zip(conditions,colors):
-#     label_itr = folderIterator(labels_dir)
-#     plot_cond(conds_dir,cond,loc_dir,color,label_itr)
-
-
-for cond,color in zip(conditions,colors):
-    power_path = conds_dir+'/'+cond
-    plot_all_epochs(power_path,cond,loc_dir,color,chan='C5')
+    # for cond,color in zip(conditions,colors):
+    #     label_itr = folderIterator(labels_dir)
+    #     plot_cond(conds_dir,cond,loc_dir,color,label_itr)
 
 
+    for cond,color in zip(conditions,colors):
+        power_path = conds_dir+'/'+cond
+        plot_all_epochs(power_path,cond,loc_dir,color,chan='P8')
+
+    plt.show()
 
 
-plt.show()
+
+if __name__ == "__main__":
+    main()
