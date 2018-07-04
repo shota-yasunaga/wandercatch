@@ -3,16 +3,6 @@ from mat2python import getFreqValuesVec,getChanLocs, getNumLabels,folderIterator
 import numpy as np
 import matplotlib.pyplot as plt
 
-## THIS SCRIPT IS NOT GENERALIZABLE
-## THIS ONLY WORKS FOR THE CASE WHEN THERE ARE 15 PPTS
-
-def getNormalizedFeatures(cond0_path,cond1_path,max_freq,num_fold):
-    '''generator that takes iterable.
-    input featureItr: should give features, labels in each iteration
-    '''
-    featureItr = getSubsampledFeatures(cond0_path,cond1_path,max_freq,num_fold)
-    for features,labels in featureItr:
-        yield normalize_power(features),labels
 
 def normalize_power(power):
     ''' normalize the power (calculate the relative power against the mean across frequency)
@@ -71,10 +61,29 @@ def plot_cond(conds_dir,cond,loc_path,color,label_itr,end_freq=30):
             freq_var = freq_var.decode("utf-8")
             plt.title('Participant: '+ freq_var[-7:-4])
         else:
-            print(files[0], 'did not have Oz') 
+            print(files[0], 'did not have Oz')
             input('understood?')
         subplot_values +=1
 
+
+def plot_all_ppt(cond_dir,conds,loc_path,color,label_itr,end_freq):
+    '''
+    Input:
+        cond_dir:
+        conds:
+        loc_path:
+        color:
+        label_itr:
+        end_freq:
+    Output: 
+        Warnings. It can only do 2 conditions now
+    '''
+    loc_itr = folderIterator(loc_path)
+    c0_itr = folderIterator(cond_dir+'/'+conds[0])
+    c1_itr = folderIterator(cond_dir+'/'+conds[1])
+    for cond0,cond1 in zip(c0_itr,c1_itr):
+        
+    
 def plot_all_epochs(power_path,cond,loc_path,color,end_freq=30,chan='Oz',subplot=False):
     '''
     In the future, allow subplot optino and ppt option
