@@ -2,7 +2,6 @@ from SVM import *
 
 import numpy as np
 from mat2python import getWholeFeatures,getSubsampledFeatures,getFeaturesItr
-from freq_power_comparison import getNormalizedFeatures
 
 import matplotlib.pyplot as plt
 
