@@ -1,4 +1,4 @@
-# wanderlust
+# wandercatch
 Wanderlust project (analyses functions)
 
 ## Meta Information
