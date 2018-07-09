@@ -15,6 +15,12 @@ from sklearn.decomposition import PCA
 ##################################
 # Related to Feature Extractions #
 ##################################
+def getRawValues(file_path):
+    f = open(file_path,'rb')
+    data = np.array(io.loadmat(f)['spectra'])
+    f.close()
+    return data
+
 def getFreqValuesVec(file_path):
     '''
     data 
@@ -27,7 +33,7 @@ def getFreqValuesVec(file_path):
 
 def readOneFeatures(file_path,max_freq = -1):
     '''
-    TODO: check if this is right!!!!!
+
     '''
     f = open(file_path,'rb')
     features = np.array(io.loadmat(f)['features'])
@@ -41,9 +47,14 @@ def readOneFeatures(file_path,max_freq = -1):
     return features,freqVec
 
 
-def getSubsampledFeatures(cond0_path,cond1_path,max_freq,num_fold):
-    features0,freqVec = readOneFeatures(cond0_path,max_freq)
-    features1,freqVec = readOneFeatures(cond1_path,max_freq)
+def getSubsampledFeatures(cond0_path,cond1_path,max_freq=-1,num_fold=1,feature_type = 'freq'):
+    if feature_type == 'freq':
+        features0,freqVec = readOneFeatures(cond0_path,max_freq)
+        features1,freqVec = readOneFeatures(cond1_path,max_freq)
+    
+    elif feature_type == 'raw':
+        features0 = getRawValues(cond0_path)
+        features1 = getRawValues(cond1_path)
     
     num_samples = min(len(features0),len(features1))
     labels  = np.concatenate((np.zeros(num_samples),np.ones(num_samples)))
@@ -85,7 +96,6 @@ def getFeaturesItr(cond0_path,cond1_path,max_freq,num_fold):
     f0_num = features0.shape[0]
     f1_num = features1.shape[0]
 
-    num_samples = min(len(features0),len(features1))
     labels  = np.concatenate((np.zeros(f0_num),np.ones(f1_num)))
     for i in range(num_fold):
         features   = np.vstack((features0,features1))

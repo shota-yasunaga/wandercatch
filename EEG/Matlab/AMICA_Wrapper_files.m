@@ -1,7 +1,3 @@
-%%%%%%%%% Scripts to run AMICA in a loop %%%%%%%%%%%%%
-%% Because I am using FASTER, I have folders that have a .set file for each.
-%% So, you enter the parent file and then this program will run AMICA for
-%% the .set files in the all of directories under the parent directory
 
 %% Dependency
 %       eeglab
