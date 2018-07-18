@@ -48,8 +48,8 @@ for nS=1:length(files)
         my_probes=[my_probes ; [nprobe nB nBt nBn  this_probe(:,2)']];
     end
     
-    bef_eeg=D(1:64,D.indsample(-10):D.indsample(0)-1,:)-repmat(mean(D([29 31],D.indsample(-10):D.indsample(0)-1,:),1),64,1,1);
-    aft_eeg=D(1:64,D.indsample(0)+1:D.indsample(10),:)-repmat(mean(D([29 31],D.indsample(0)+1:D.indsample(10),:),1),64,1,1);
+    bef_eeg=D(1:64,D.indsample(-10):D.indsample(0)-1,:);%-repmat(mean(D([29 31],D.indsample(-10):D.indsample(0)-1,:),1),64,1,1);
+    aft_eeg=D(1:64,D.indsample(0)+1:D.indsample(10),:);%-repmat(mean(D([29 31],D.indsample(0)+1:D.indsample(10),:),1),64,1,1);
     
     
     param=[];
@@ -99,14 +99,14 @@ end
 
 %%
 figure;
-plot(faxis2,squeeze(mean(all_logSNR_ON(30,:,:),3)),'b');
+plot(faxis2,squeeze(mean(all_logSNR_ON(60,:,:),3)),'b');
 hold on
-plot(faxis2,squeeze(mean(all_logSNR_MW(30,:,:),3)),'r')
+plot(faxis2,squeeze(mean(all_logSNR_MW(60,:,:),3)),'r')
 
 %%
 figure
 subplot(4,2,1)
-plot(faxis2,squeeze(mean(logPow_bef_state(num_state(:,2)>5,1,30,:),1)),'b');
+plot(faxis2,squeeze(mean(logPow_bef_state(num_state(:,2)>5,1,3fa0,:),1)),'b');
 hold on;
 plot(faxis2,squeeze(mean(logPow_bef_state(num_state(:,2)>5,2,30,:),1)),'r')
 xlim([0.5 40])
