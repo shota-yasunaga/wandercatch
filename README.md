@@ -8,8 +8,138 @@ Email      : shotayasunaga1996@gmail.com
 
 Institution: Monash University  (research conducted)/Pitzer College     (home institute of Shota)
 
-Last Modified [2018-06-04 12:58]  
+Last Modified [2018-07-09 13:43]  
 
+
+## File Structure
+  There are READMEs for each folder. So, take a look at that for the detail.
+  - /Behavior ... Behavior analysis
+    - contains Matlab files to deal with behavior analysis. For detail, look at the README there. 
+  - /EEG ... EEG data analysis
+    - /Matlab
+      - mostly dealing with data conversion/feature extraction including labeling
+    - /Python
+      - /Classifiers ... classification scripts
+      - helper files for classifications/data conversion and some analysis including FOOOF algorithm.
+    - /thomas
+      - I don't know :) 
+    - history.txt ... incomplete note of my analysis procedure. 
+
+  - README.md ... This README file
+  - util.m ... commom operations for all
+
+## Quick Guide
+  - Feature Extraction 
+
+    EEG/Matlab and EEG/Python. Look at Precodere
+  - Behavior Analysis
+
+    Just look at /Behavior
+  - Frequency Plots with std
+
+    After pre-processing (data conversion), EEG/Python/\*.py
+
+## Procedure
+
+Proceude examples for EEG data analysis. For about behavior data file, look at Behacior Data Sectio below.
+You are generally required to do the pre-processing regardless of the cleaning or not. Most of the processes are labeling and converting data. 
+=
+### Preprocessing
+
+*With Data Cleaning*
+
+0. convert_location_mat2eeglab.m create location file (skip if you have .xyz file. in this repository)
+0. I changed a bit from 0. I am now using .ced file. This file is more accurate version of .xyz file. 
+1. spm2eeg.m ... convert spm to eeglab structure
+2. label2txt.m ... get the labels of epochs that are available for eeglab
+3. label_epoch.m ... labels epochs of eeglab dataset
+4. interpolate_loop.m ... clean the data and average reference
+5. epoch_w_labels.m ... create new datasets based on the epochs
+
+
+*Without Data Cleaning*
+
+Skip 4
+
+### Other operations
+
+6. plot_freq_loop.m ... create frequency decompositions maps
+6. getFreqValues.m
+7. fit_fooof_script.py (from here,it's python)
+8. freq_power_comparison.py,plot_fooof_vs_labels.py,peak_power_cmp.py
+
+### Feature Extraction
+
+extract_features.m
+
+#### Behavioral Data
+
+- all_task_responses
+ 1. num_blocks
+ 2. num_trials
+ 3. doesn't_matter
+ 4. block_type ... 1: verbal task 2: spatial
+ 5. direction... 1 is right (forward),2 is lest(backward)
+ 6-9 ... right answer
+
+ 10-12... keyboard num (response)
+
+ 14-17... corrected response
+
+ 18-21... correctness-> NaN means there was probe
+    --> no response time
+
+
+- all_task_times
+ 1. Block Num
+ 2. Trial Num
+ 3. ??
+ 4. type (spatial/word)
+ 5. all 1s
+ 6. duplicate of 4
+ 7. ??
+ 8. ??
+ 9. Onset Trial
+ 10. Fixation
+ 11. Onset Stimulus presentation
+ 12. end of trial
+ 13. Onset que (arrow)
+ 14. Second arrow
+ 15. Num response
+ - \*verbal  --> question onset is for each word
+ 16. Question for the first arrow
+ 17. Question for the second arrow
+ 18. Response for the first arrow
+ 19. Response for the second arrow
+- \*spatial --> question onset is only one timing
+ 16. NaN
+ 17. NaN
+ 18. Answer for the first arrow
+ 19. Answer for the second arrow
+
+- all_probe_response
+ There are 7 questions for each probe
+ 1. Probe Num
+ 2. Block Num
+ 3. Trials Num (within a block)
+ 4. Probe Num (duplicate of 1)
+ 5. Question Num 
+ 6. Row keyboard Number
+ 7. Onset of Question
+ 8. Onset of the reaction
+ 9. What the answer was (for the question)
+ 
+ For 2nd question (Labels)
+ (1) Off-Task (2) Blank (3) Don''t Remember (4)
+
+
+- all_probe_times
+ 1. Probe Num
+ 2. Block Num
+ 3. In which trial, this probe happened (WITHIN BLOCKS)
+ 4. Probe Num within the block
+ 5. Onset Probe
+ 6. Onset Response
 
 ## Behavior
 Functions for behavioral analysis
@@ -55,18 +185,6 @@ Information about the data index is at the bottom
 
 ## EEG
 Functions to conduct eeg data analysis
-
-### Procedure
-0. convert_location_mat2eeglab.m create location file (skip if you have .xyz file. in this repository)
-1. spm2eeg.m ... convert spm to eeglab structure
-2. label2txt.m ... get the labels of epochs that are available for eeglab
-3. label_epoch.m ... labels epochs of eeglab dataset
-4. interpolate_loop.m ... clean the data and average reference
-5. epoch_w_labels.m ... create new datasets based on the epochs
-6. plot_freq_loop.m ... create frequency decompositions maps
-6. getFreqValues.m
-7. fit_fooof_script.py (from here,it's python)
-8. freq_power_comparison.py,plot_fooof_vs_labels.py,peak_power_cmp.py
 
 
 
@@ -196,71 +314,4 @@ TODO: I need to restructure this because the function names are not appropriate
   
 
 
-#### Behavioral Data
 
-- all_task_responses
- 1. num_blocks
- 2. num_trials
- 3. doesn't_matter
- 4. block_type ... 1: verbal task 2: spatial
- 5. direction... 1 is right (forward),2 is lest(backward)
- 6-9 ... right answer
-
- 10-12... keyboard num (response)
-
- 14-17... corrected response
-
- 18-21... correctness-> NaN means there was probe
-    --> no response time
-
-
-- all_task_times
- 1. Block Num
- 2. Trial Num
- 3. ??
- 4. type (spatial/word)
- 5. all 1s
- 6. duplicate of 4
- 7. ??
- 8. ??
- 9. Onset Trial
- 10. Fixation
- 11. Onset Stimulus presentation
- 12. end of trial
- 13. Onset que (arrow)
- 14. Second arrow
- 15. Num response
- - \*verbal  --> question onset is for each word
- 16. Question for the first arrow
- 17. Question for the second arrow
- 18. Response for the first arrow
- 19. Response for the second arrow
-- \*spatial --> question onset is only one timing
- 16. NaN
- 17. NaN
- 18. Answer for the first arrow
- 19. Answer for the second arrow
-
-- all_probe_response
- There are 7 questions for each probe
- 1. Probe Num
- 2. Block Num
- 3. Trials Num (within a block)
- 4. Probe Num (duplicate of 1)
- 5. Question Num 
- 6. Row keyboard Number
- 7. Onset of Question
- 8. Onset of the reaction
- 9. What the answer was (for the question)
- 
- For 2nd question (Labels)
- (1) Off-Task (2) Blank (3) Don''t Remember (4)
-
-
-- all_probe_times
- 1. Probe Num
- 2. Block Num
- 3. In which trial, this probe happened (WITHIN BLOCKS)
- 4. Probe Num within the block
- 5. Onset Probe
- 6. Onset Response

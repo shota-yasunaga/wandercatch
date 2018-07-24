@@ -6,6 +6,7 @@ import numpy as np
 from mat2python import getWholeFeatures,getSubsampledFeatures,getFeaturesItr
 from plot_methods import plot_scatters
 from scipy.io import savemat
+from scipy.stats import ttest_rel
 
 # Plots
 import matplotlib.pyplot as plt
@@ -61,9 +62,14 @@ class ScoreSummary(object):
         self.test_list     = []
         self.dimensions    = dimensions 
         self.shape         = None # Not working now
+
+        # Sudo private values
         self.save_plot_bool= False
         self.save_plot_path= None
         self.save_vars_bool=False
+        self.save_mean = True        
+        self.save_std  = True
+        self.t_score   = True
         self.save_vars_path=None
     def append(self,score_like):
         '''append the training_list and test_list
@@ -72,7 +78,6 @@ class ScoreSummary(object):
         '''
         if isinstance(score_like,ScoreSummary):
             append_training,append_test = score_like.getTuple()
-
             self.training_list.append(append_training)
             self.test_list.append(append_test)
             self.dimensions+=(score_like.dimensions)
@@ -85,6 +90,7 @@ class ScoreSummary(object):
 
     def getTuple(self):
         '''
+        helper method to return trainng list and test list as numpy array
         '''
         return np.array(self.training_list),np.array(self.test_list)
     def std(self,axis = None):
@@ -99,8 +105,13 @@ class ScoreSummary(object):
         return self
         
     def plot(self,x,subplot_dims=[2,3],across_dim=None,clf_dim=None,suptitle=None,titles = '',x_label='Across Dim',y_label='Accuracy',plt_func=plt.errorbar):
-        '''It plots the accuracy with standard deviation'''
-        # Mean
+        '''It plots the accuracy with standard deviation
+            Currently, this function is probably not very flexible. It only allows 2,3 dimensions of the data. It needs to be generalized somehow 
+            in the future, which might not come.
+
+            Ahhh, I made this function too strict... It's really hard to grasp what I need to do and I made this funciton gesus. 
+        '''
+           # Mean
         if suptitle==None:
             suptitle=str(self.shape)
         if across_dim==None:
@@ -117,7 +128,7 @@ class ScoreSummary(object):
         test_std     = np.std(self.test_list,axis = axis)
 
         # Save the variales
-        self.save_vars(test_mean,suptitle,titles)
+        self.save_vars(suptitle,titles,axis)
 
         # Plot the figures
         num_figures = subplot_dims[0]*subplot_dims[1]
@@ -138,6 +149,7 @@ class ScoreSummary(object):
                 plt.close()
                 plt.figure(figsize=(15,10))
                 plt.suptitle(suptitle)
+        plt.close()
 
     def save_plot_init(self,save_plot_path):
         '''make the self.plot save the plot to save_plot_path'''
@@ -152,14 +164,47 @@ class ScoreSummary(object):
         '''make the self.plot save the variables(test_mean) to save_vars_path'''
         self.save_vars_bool = True
         self.save_vars_path = save_vars_path
-    def save_vars(self, test_mean,suptitle,titles):
+
+    def save_values(l_words):
+        self.save_mean = 'mean' in l_words
+        self.save_std  = 'std'  in l_words
+        self.t_score   = 't_score' in l_words
+
+    def save_vars(self,suptitle,titles, axis):
         '''Helper method called in self.plot(). It saves the variables'''
         if self.save_vars_bool:
+            saving_dic = {}
+            if self.save_std: 
+                test_std     = np.std(self.test_list,axis = axis)
+                saving_dic.update( {titles[i]+'_std':  test_std[:,i] for i in range(len(titles))})
+            if self.save_mean:
+                test_mean     = np.mean(self.test_list,axis = axis)
+                saving_dic.update({titles[i]+'_mean': test_mean[:,i] for i in range(len(titles))})
+            if self.t_score:
+                shape = np.array(self.test_list).shape
+                if len(axis) == 2:
+                    self.test_list = np.reshape(self.test_list,(shape[0]*shape[1],-1))
+                    shape = self.test_list.shape
+                (t_scores,p_values)  = ttest_rel(self.test_list,np.ones(shape)*0.5,axis = 0)
+                t_scores = t_scores.reshape(t_scores.shape[0],-1)
+                saving_dic.update({titles[i]+'_tscore': t_scores[:,i] for i in range(len(titles))})
             with cd(self.save_vars_path):
-                saving_dic = {titles[i]: test_mean[:,i] for i in range(len(titles))}
                 savemat(suptitle+'.mat',saving_dic)
 
 
+
+def readScoreValues(file_path, mean_name = 'Linear_mean', std_name = 'Linear_std'):
+    f = open(file_path,'rb')
+    mean_values = np.array(io.loadmat(f)[mean_name])
+    std_values  = np.array(io.loadmat(f)[std_name])
+
+    return mean_values,std_values
+
+def plotScoreSummary(path0, path1):
+    mean_values0,std_values0 = readScoreValues(path0)
+    mean_values1,std_values1 = readScoreValues(path1)
+
+    return 'whhhhy Japanese people!?!?'
 
 
 class ClfItrFolder(object):
@@ -268,6 +313,53 @@ class clfFolder(ClfItrFolder):
                 print(confusion_matrix(y_test,y_pred))
         return self.score_list
 
+class clfFolderOpposite(ClfItrFolder):
+    """docstring for clfFolder
+        for debugging purpose
+    """
+    def __init__(self, clfs,verbose = False):
+        super(ClfItrFolder, self).__init__()
+        self.clfs= clfs
+        self.accuracy_measure_func = accuracy_score
+        self.verbose = verbose
+        self.kwargs = None
+    def setAccuracyFun(self,accuracy_func,**kwargs):
+        self.accuracy_measure_func = accuracy_func
+        self.kwargs = kwargs
+    def fit(self,X,y):
+        clf_training = []
+        clf_test     = []
+        for clf in self.clfs:
+            clf.fit(X,y)
+    def predict(self,X,y):
+        predictions = []
+        for clf in self.clfs:
+            predictions.append(clf.predict(X))
+        return predictions
+    def score(self,X_train,y_train,X_test,y_test):
+        self.init_score_list()
+        clfs_scores = [] #(clfs,:)
+        for clf in self.clfs:
+            clf.fit(X_train,y_train)
+            y_pred = clf.predict(X_test)
+            y_pred = np.ones(y_pred.shape) - y_pred
+            # training_accuracy=f1_score(y_train,clf.predict(X_train),average="weighted")
+            # test_accuracy = f1_score(y_test,y_pred,average="weighted")
+            training_accuracy = self.accuracy_measure_func(y_train,clf.predict(X_train),**self.kwargs)
+            test_accuracy     = self.accuracy_measure_func(y_test,y_pred,**self.kwargs)
+            self.score_list.append((training_accuracy,test_accuracy))
+            if self.verbose:
+                print(self.accuracy_measure_func)
+                print(self.kwargs)
+                print('------------------')
+                print(clf)
+                print('training accuracy score')
+                print(training_accuracy)
+                print('test accuracy score')
+                print(test_accuracy)
+                print('Confusion Matrix')
+                print(confusion_matrix(y_test,y_pred))
+        return self.score_list
 
 class subSampler(ClfItrFolder):
     """docstring for subSampler"""
@@ -277,6 +369,7 @@ class subSampler(ClfItrFolder):
         self.num_sub_samples = num_sub_samples
         self.subsample_func  = getSubsampledFeatures
         self.sub_sample      = None
+        self.progress = False
     def set_subsample_func(self,subsample_func):
         '''set the subsampling sunfcion
         input: subsample_func... should take (on_path,mw_path,max_freq, nsubsamples)
@@ -581,8 +674,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
 
