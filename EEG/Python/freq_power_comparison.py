@@ -82,6 +82,7 @@ def plot_all_ppt(cond_dir,conds,loc_path,color,label_itr,end_freq):
     c0_itr = folderIterator(cond_dir+'/'+conds[0])
     c1_itr = folderIterator(cond_dir+'/'+conds[1])
     for cond0,cond1 in zip(c0_itr,c1_itr):
+        pass
         
     
 def plot_all_epochs(power_path,cond,loc_path,color,end_freq=30,chan='Oz',subplot=False):

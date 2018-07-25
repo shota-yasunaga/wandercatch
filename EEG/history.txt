@@ -90,3 +90,8 @@ Plot_Classification
     s(Number)… mainly to tun classification because of my laziness
     window(N)_bandwidth_(N)… FFT with window N and bandwidth N, usually bandwidth = 1/window
 
+###################
+# Trials Analysis #
+###################
+
+s307… epoch 43 (On label) was too horrible to run FFT. So, I removed the epoch under Unprocessed/On

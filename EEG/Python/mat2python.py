@@ -15,11 +15,17 @@ from sklearn.decomposition import PCA
 ##################################
 # Related to Feature Extractions #
 ##################################
+
 def getRawValues(file_path):
     f = open(file_path,'rb')
-    data = np.array(io.loadmat(f)['spectra'])
+    data = np.array(io.loadmat(f)['data'])
     f.close()
     return data
+def getGeneralValues(file_path,data_name):
+    f = open(file_path,'rb')
+    features = np.array(io.loadmat(f)[data_name])
+    f.close()
+    return features
 
 def getFreqValuesVec(file_path):
     '''
@@ -37,7 +43,7 @@ def readOneFeatures(file_path,max_freq = -1):
     '''
     f = open(file_path,'rb')
     features = np.array(io.loadmat(f)['features'])
-    freqVec   = np.array(io.loadmat(f)['freqVec'])
+    freqVec   = np.array(io.loadmat(f)['freqVec'])  
     freqVec = np.array([round(freq[0],1) for freq in freqVec])
     end_ind = list(freqVec).index(max_freq)
     
@@ -55,6 +61,9 @@ def getSubsampledFeatures(cond0_path,cond1_path,max_freq=-1,num_fold=1,feature_t
     elif feature_type == 'raw':
         features0 = getRawValues(cond0_path)
         features1 = getRawValues(cond1_path)
+    else:
+        features0 = getGeneralValues(cond0_path,feature_type)
+        features1 = getGeneralValues(cond1_path,feature_type)
     
     num_samples = min(len(features0),len(features1))
     labels  = np.concatenate((np.zeros(num_samples),np.ones(num_samples)))
@@ -62,7 +71,6 @@ def getSubsampledFeatures(cond0_path,cond1_path,max_freq=-1,num_fold=1,feature_t
         resampled0 = resample(features0,replace=False,n_samples=num_samples)
         resampled1 = resample(features1,replace=False,n_samples=num_samples)
         features   = np.vstack((resampled0,resampled1))
-
         yield features,labels
 
 def flatten_features(X):
@@ -70,6 +78,13 @@ def flatten_features(X):
     shape = X.shape
     X = X.reshape(shape[0],-1)
     return X
+
+def getPartialSubsampledFeatures(cond0_path,cond1_path,max_freq=-1,num_fold=1,feature_type = 'freq',partial_func = flatten_features, **kwargs):
+    for features, labels in getSubsampledFeatures(cond0_path,cond1_path,max_freq=max_freq,num_fold=num_fold,feature_type = feature_type, **kwargs):
+        features = partial_func(features)
+        yield features,labels
+
+
 
 def getNormalizedFeatures(cond0_path,cond1_path,max_freq,num_fold):
     '''generator that takes iterable.
@@ -162,21 +177,19 @@ def getAllPptFeatures(cond0_folder,cond1_folder,max_freq,ppt_list=None, normaliz
             count1 += len(l1)
     f0_list = np.vstack(f0_list)
     f1_list = np.vstack(f1_list) 
-    if normalizer:
+    if normalize:
         from freq_power_comparison import normalize_power
         return normalize_power(f0_list),normalize_power(f1_list),count0,count1
     else:
         return f0_list,f1_list,count0,count1
 
-
-
 def getSubsampledAllPpt(cond0_folder,cond1_folder,max_freq,num_fold,ppt_list=None, normalize = False):
-    features0,features1,count0,count1 = getAllPptFeatures(cond0_folder,cond1_folder,max_freq,ppt_list= ppt_list,normalize = normalize)
+    feature0,feature1,count0,count1 = getAllPptFeatures(cond0_folder,cond1_folder,max_freq,ppt_list= ppt_list,normalize = normalize)
     # count each label
-    for features, labels in subSampledFeaturesHelper(features0,feature1,count0,count1,num_fold):
+    for features, labels in subSampledFeaturesHelper(feature0,feature1,count0,count1,num_fold):
         yield features, labels
 
-def subSampledFeaturesHelper(features0,feature1,count0,count1, num_fold):
+def subSampledFeaturesHelper(features0,features1,count0,count1, num_fold):
     num_samples = min(count0,count1)
 
     labels  = np.concatenate((np.zeros(num_samples),np.ones(num_samples)))
@@ -219,7 +232,6 @@ def numFeatures(shape):
     return accumulator
 
 
-
 ##########
 # Others #
 ##########
@@ -253,6 +265,3 @@ def chanIndIterator(loc_path,chan='Oz'):
             input('understood?')
             chan_ind = -1
         yield chan_ind
-
-
-

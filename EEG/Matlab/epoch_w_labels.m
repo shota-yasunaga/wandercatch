@@ -8,8 +8,8 @@
 % shotayasunaga1996@gmail.com
 
 % prefixes
-% pr... probe
-% tr.. trials
+% pr... probeaaaa
+% tr.. trials(m
 
 clear
 %%%%%%%%%%%%%
@@ -19,16 +19,19 @@ clear
 % The script is dependent of the fact taht you put S (capital) in front of
 % the number of participants
 % if you want to change it, you need to look at around "strtok"
-eeg_dir      = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/eeglab';
+eeg_dir      = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/PreProcessed/Laplacian/eeglab';
 
 % file, util. Has to have util.m in it. 
 util_dir     = '/Users/macbookpro/Dropbox/College/TsuchiyaLab/wandercatch/';
 
 % path to save data
-on_dir   = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed_conds/On'; % On Task
-mb_dir   = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed_conds/MB'; % Mind Blanking
-mw_dir   = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed_conds/MW'; % Mind Wandering
-off_dir  = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed_conds/Off'; % Off Task
+% base = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/Unprocessed/20seconds_escape';
+base = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/PreProcessed/Laplacian';
+
+on_dir   = [base, '/On']; % On Task
+mb_dir   = [base, '/MB']; % Mind Blanking
+mw_dir   = [base, '/MW']; % Mind Wandering
+off_dir  = [base, '/Off']; % Off Task
 
 
 %%%%%%%%%%%%%%%%%%%%
