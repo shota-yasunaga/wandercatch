@@ -1,18 +1,29 @@
 # wandercatch
-Wanderlust project (analyses functions)
+This project's aim is to classify "Mind Wandering" and "On Task" based on the neural signal.
 
-## Meta Information
+## Information
 Main Editor: Shota Yasunaga
+
+Supported by: Thomas Andrillon, Nao Tsuchiya
 
 Email      : shotayasunaga1996@gmail.com
 
 Institution: Monash University  (research conducted)/Pitzer College     (home institute of Shota)
 
-Last Modified [2018-07-09 13:43]  
+## Reqiurements
+Python (3.0)
+
+matplotlib
+
+scipy
+
+sklearn
 
 
-## File Structure
+
+## Folder Structure
   There are READMEs for each folder. So, take a look at that for the detail.
+
   - /Behavior ... Behavior analysis
     - contains Matlab files to deal with behavior analysis. For detail, look at the README there. 
   - /EEG ... EEG data analysis
@@ -26,15 +37,20 @@ Last Modified [2018-07-09 13:43]
     - history.txt ... incomplete note of my analysis procedure. 
 
   - README.md ... This README file
-  - util.m ... commom operations for all
+  - util.m     ... commom operations for all
+  - .gitignore ... ignore files
 
 ## Quick Guide
   - Feature Extraction 
 
     EEG/Matlab and EEG/Python. Look at Precodere
+
+  - Classification 
+    
+    EEG/Python/Classifiers
   - Behavior Analysis
 
-    Just look at /Behavior
+    Look at /Behavior
   - Frequency Plots with std
 
     After pre-processing (data conversion), EEG/Python/\*.py
@@ -43,7 +59,7 @@ Last Modified [2018-07-09 13:43]
 
 Proceude examples for EEG data analysis. For about behavior data file, look at Behacior Data Sectio below.
 You are generally required to do the pre-processing regardless of the cleaning or not. Most of the processes are labeling and converting data. 
-=
+
 ### Preprocessing
 
 *With Data Cleaning*
@@ -68,11 +84,7 @@ Skip 4
 7. fit_fooof_script.py (from here,it's python)
 8. freq_power_comparison.py,plot_fooof_vs_labels.py,peak_power_cmp.py
 
-### Feature Extraction
-
-extract_features.m
-
-#### Behavioral Data
+## Behavioral Data
 
 - all_task_responses
  1. num_blocks
