@@ -64,7 +64,7 @@ k_fold   = kFolder(adc,num_split=5)
 ```
 subSampler is a little bit more complited. 
 
-First, you specify the number of subSamples (for the meaning of this, look at the explanation of the [subSamples](###subSampler))
+First, you specify the number of subSamples (for the meaning of this, look at the explanation of the [subSamples](#subsampler))
 ```python
 subs = subSampler(k_fold,num_sub_samples=10)
 ```
@@ -84,7 +84,7 @@ progress_bar is optional. It just shows the progress bar on the temrinal to make
 ```python
 subs.progress_bar()
 ```
-subs.score evokes all of the classifier iterator folder that you have passed up to here. It does all of the steps specified by those layers. This returns the scoreSummary object (read [scoreSummary](####ScoreSummary))
+subs.score evokes all of the classifier iterator folder that you have passed up to here. It does all of the steps specified by those layers. This returns the scoreSummary object (read [scoreSummary](#scoresummary))
 ```python
 scores = subs.score()
 ```
@@ -92,7 +92,7 @@ Then, you need to set where you want to save the plot. If you do not run this co
 ```python
 scores.save_plot_init(saving_plot_path)
 ```
-Finally, we plot the results outputted to scores. For the detail of the specification for plot, look at [scoreSummary](####ScoreSummary). There are some things you need to take care here because of my laziness. Especially, the number of classifiers should be divisible by subplot_dims(x*y).Then, you need to specify which dimension, acrossDimClassifier and clfFolder were. 
+Finally, we plot the results outputted to scores. For the detail of the specification for plot, look at [scoreSummary](#scoresummary). There are some things you need to take care here because of my laziness. Especially, the number of classifiers should be divisible by subplot_dims(x*y).Then, you need to specify which dimension, acrossDimClassifier and clfFolder were. 
 ```python
 # plot all of the scores
 suptitle = 's'+ppt
@@ -115,6 +115,8 @@ This class is to run different kind of classifiers at the same time.
 
 Currently, you need to have this at the lowest layer of the ClfItrFolders and I thihnk I will not develop upon this version. 
 
+\* **ClfFolderOpposite** is basically the same class as ClfFolder, but it predicts the opposite in the test. I was getting some weird results and made this. You should probably not use this class.
+
 ### subSampler
 This class sub-samples from the orignal samples on each category based on the function specified. 
 
@@ -123,17 +125,26 @@ ScoreSummary deals with the results omitted from the Classifiers. Classifiers ar
 
 You can get ScoreSummary object from anyCltItrFolder(acrossDimClassifier, clfFolder,subSampler)
 
+Look at [mat2python](https://github.com/andrillon/wandercatch/tree/master/EEG/Python#mat2python) for the functions to pass to ScoreSummary objects.
 
-# Functions
-## mat2python
+# Functions (Modules)
 
-mat2python has all of the feature import/modification related functions.
-
-This has some interpretability adbantages since the cahnce performance is 50% (You don't have to compare against the different chance performance based on the subjects). 
 
 # Scripts
 Scripts in general are to be modified according to your need. It has basic structure so that it's easier to modify. 
 
-Looking at the [Tutorial](##Tutorial) will help you understand the code. 
+Looking at the [Tutorial](#tutorial) will help you understand the code. 
 
-## 
+- SVM_all_pts_together.py
+  
+  run SVM with all of the participants' features together. 
+
+- SVM_ppts_loop.py
+
+  run classifications on different participants in a loop
+
+- find_coefficients.py
+
+  Run SVM with linear kernel and see the coefficients 
+
+If you understand those, all you have to do for other projects is to modify those scripts. However, here are some other scripts that I have written.  TODO: decide what I will include. 

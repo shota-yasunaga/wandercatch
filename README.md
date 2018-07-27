@@ -2,7 +2,7 @@
 This project's aim is to classify "Mind Wandering" and "On Task" based on the neural signal.
 
 ## Information
-Main Editor: Shota Yasunaga
+Main Developer: Shota Yasunaga
 
 Supported by: Thomas Andrillon, Nao Tsuchiya
 
@@ -11,28 +11,43 @@ Email      : shotayasunaga1996@gmail.com
 Institution: Monash University  (research conducted)/Pitzer College     (home institute of Shota)
 
 ## Reqiurements
-Python (3.0)
+List of software/packages you need. Let me know if I was missing something
 
-matplotlib
+I have used the versions written here, but other versions might work as well. Who knows.
+### Matlab
+Matlab 2016 (other versions might or might not work)
 
-scipy
+eeglab (14.0.0)
 
-sklearn
+fieldtrip 
 
 
+
+### Python
+Python (3.6.2)
+
+matplotlib (2.2.0)
+
+scipy (1.1.0)
+
+numpy (1.14.3)
+
+sklearn 0.19.1 (For classifiers related work)
+
+[fooof](https://github.com/voytekresearch/fooof) (for the power spectram peak/baseline analysis)
 
 ## Folder Structure
   There are READMEs for each folder. So, take a look at that for the detail.
 
-  - /Behavior ... Behavior analysis
+  - /[Behavior](https://github.com/andrillon/wandercatch/tree/master/Behavior) ... Behavior analysis
     - contains Matlab files to deal with behavior analysis. For detail, look at the README there. 
-  - /EEG ... EEG data analysis
-    - /Matlab
+  - /[EEG](https://github.com/andrillon/wandercatch/tree/master/EEG) ... EEG data analysis
+    - /[Matlab](https://github.com/andrillon/wandercatch/tree/master/EEG/Matlab)
       - mostly dealing with data conversion/feature extraction including labeling
-    - /Python
-      - /Classifiers ... classification scripts
+    - /[Python](https://github.com/andrillon/wandercatch/tree/master/EEG/Python)
+      - /[Classifiers](https://github.com/andrillon/wandercatch/tree/master/EEG/Classifiers) ... classification scripts
       - helper files for classifications/data conversion and some analysis including FOOOF algorithm.
-    - /thomas
+    - /[thomas](https://github.com/andrillon/wandercatch/tree/master/EEG/thomas)
       - I don't know :) 
     - history.txt ... incomplete note of my analysis procedure. 
 
@@ -43,7 +58,7 @@ sklearn
 ## Quick Guide
   - Feature Extraction 
 
-    EEG/Matlab and EEG/Python. Look at Precodere
+    EEG/Matlab and EEG/Python. Look at Precedure
 
   - Classification 
     
@@ -62,25 +77,16 @@ You are generally required to do the pre-processing regardless of the cleaning o
 
 ### Preprocessing
 
-*With Data Cleaning*
-
-0. convert_location_mat2eeglab.m create location file (skip if you have .xyz file. in this repository)
-0. I changed a bit from 0. I am now using .ced file. This file is more accurate version of .xyz file. 
 1. spm2eeg.m ... convert spm to eeglab structure
 2. label2txt.m ... get the labels of epochs that are available for eeglab
 3. label_epoch.m ... labels epochs of eeglab dataset
-4. interpolate_loop.m ... clean the data and average reference
+4. interpolate_loop.m ... clean the data (rough) and average reference (**only if you want to clean the data**)
 5. epoch_w_labels.m ... create new datasets based on the epochs
 
 
-*Without Data Cleaning*
-
-Skip 4
-
 ### Other operations
 
-6. plot_freq_loop.m ... create frequency decompositions maps
-6. getFreqValues.m
+6. plot_freq_loop.m, getFreqValues.m ... create frequency decompositions maps, get the values of that.
 7. fit_fooof_script.py (from here,it's python)
 8. freq_power_comparison.py,plot_fooof_vs_labels.py,peak_power_cmp.py
 
@@ -260,70 +266,4 @@ Functions to conduct eeg data analysis
   ! You need to have .xyz file in order to do the loation convertion
 
 - Features Dimension: (conds,channels,freqneucy bins,time bins)
-
-
-
-#### Python
-- fit_fooof_script.py
-
-  Script to fit the fooof model for all of the power spectrum under a folder.
-  You can save the fitted values/report of fitting
-
-
-- freq_power_comparison.py
-
-  Script to plot the power spectrum of the differnent conditions for each participant
-
-- plot_fooof_vs_labels.py
-
-  scripts to plot fooof fitted values vs the amount of labels (On,OW,MB,Off)
-
-- peak_power_cmp.py
-
-  to compare the peak (including freqneucy tags and alpha) values between labels(On,MW,MB,etc)
-
-- flicker_analysis.py
-  
-  script to compare the values of the flickers power values
-
-##### Helper Functions
-
-- fooof_vars_methods.py
-
-  Methods useful for extracting values from the fooof fitted values(finding alpha, finding amplitude of alpha
-
-- util.py
-  
-  have different useful functions for mostly classifiers. It also has cd class that deals with moving directories
-
-- mat2python.py
-
-  helper methos to read matlab variables and convert it to be able to use for the python script. It has usefult iterators, too. 
-
-- plot_methods.py
-  
-  helper methods for plooting scatter plots
-
-
-## Classifiers
-
-TODO: I need to restructure this because the function names are not appropriate
-
-- SVM.py
-  This has all of the classes that I'm using to verify the classifiers.
-
-- SVM_all_pts_together.py
-  
-  run SVM with all of the participants' features together. 
-
-- SVM_ppts_loop.py
-
-  run classifications on different participants in a loop
-
-- find_coefficients.py
-
-  Run SVM with linear kernel and see the coefficients 
-  
-
-
 
