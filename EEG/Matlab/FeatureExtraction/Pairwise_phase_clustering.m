@@ -24,7 +24,7 @@ util_dir     = '/Users/macbookpro/Dropbox/College/TsuchiyaLab/wandercatch/';
 % path to fieldtrip
 fieldtrip_path = '/Users/macbookpro/Matlab/Toolboxes/fieldtrip';
 % path to save clustering values
-save_dir     = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/PreProcessed/Laplacian/Features/PhaseClustering/';
+save_dir     = '/Volumes/SHard/Tsuchiya_Lab_Data/Probes/PreProcessed/Laplacian/Features/AllPhaseCluster';
 
 
 
@@ -93,7 +93,8 @@ function pcv = eeg2phase(eeg_path)
     cfg.trials    =  'all';
     cfg.keeptrials= 'yes';
     cfg.output    = 'fourier';
-    cfg.foi       = [6 7.5:0.5:12 15 24 30];
+%     cfg.foi       = [6 7.5:0.5:12 15 24 30];
+    cfg.foi       = [ 1:0.5:40];
     cfg.toi       = '50%';
     cfg.t_ftimwin = 0.2*ones([1,length(cfg.foi)]);
     % cfg.t_ftimwin = 4 ./ cfg.foi;

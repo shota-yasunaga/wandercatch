@@ -1,6 +1,6 @@
 # Matlab 
 
-## Procedure (Data conversion)
+## Procedure (DataHandling)
 
 This procedure starts with the spm file and creates new datasets seperated with conditinos.
 
@@ -11,7 +11,7 @@ This procedure starts with the spm file and creates new datasets seperated with 
 5. epoch_w_labels.m ... create new datasets based on the epochs
 
 
-## Feature Extractions
+## Feature Extractions 
 
 These codes are mainly made for classification, but you can use it for regular analysis, too. 
 
@@ -27,5 +27,5 @@ All of the scripts support looping over participants.
 - saveEEG_values.m ... save the raw valtage values as features
     - downsample_loop.m ... downsample the original data and save (meant to be used with saveEEG_values, but you can use it for anything...)
 
-
-## Feature Plotting
+## Plots
+    

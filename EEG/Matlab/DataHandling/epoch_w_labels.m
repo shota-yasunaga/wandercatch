@@ -8,8 +8,8 @@
 % shotayasunaga1996@gmail.com
 
 % prefixes
-% pr... probeaaaa
-% tr.. trials(m
+% pr... probe
+% tr.. trials
 
 clear
 %%%%%%%%%%%%%
