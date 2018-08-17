@@ -10,7 +10,7 @@ Email      : shotayasunaga1996@gmail.com
 
 Institution: Monash University  (research conducted)/Pitzer College     (home institute of Shota)
 
-## Reqiurements
+## Reqiurements 
 List of software/packages you need. Let me know if I was missing something
 
 I have used the versions written here, but other versions might work as well. Who knows.
@@ -43,7 +43,9 @@ sklearn 0.19.1 (For classifiers related work)
     - contains Matlab files to deal with behavior analysis. For detail, look at the README there. 
   - /[EEG](https://github.com/andrillon/wandercatch/tree/master/EEG) ... EEG data analysis
     - /[Matlab](https://github.com/andrillon/wandercatch/tree/master/EEG/Matlab)
-      - mostly dealing with data conversion/feature extraction including labeling
+      - /[DataHandling](https://github.com/andrillon/wandercatch/tree/master/EEG/Matlab/DataHandling) ... converts/organizes data
+      - /[FeatureExtraction](https://github.com/andrillon/wandercatch/tree/master/EEG/Matlab/FeatureExtraction)... extracts features
+      - /[Plots](https://github.com/andrillon/wandercatch/tree/master/EEG/Matlab/Plots) ... plots EEG-related staff
     - /[Python](https://github.com/andrillon/wandercatch/tree/master/EEG/Python)
       - /[Classifiers](https://github.com/andrillon/wandercatch/tree/master/EEG/Classifiers) ... classification scripts
       - helper files for classifications/data conversion and some analysis including FOOOF algorithm.
@@ -203,67 +205,4 @@ Information about the data index is at the bottom
 
 ## EEG
 Functions to conduct eeg data analysis
-
-
-
-### Functions
-### Matlab
-- util.m
-  Gathered common operations for scripts
-
-  Syntax is out = util('FunctionName', inputs)
-  - getBehaviorFiles(dir)... get the .mat files under dir
-  - getEEGFiles (dir) ... get the .set files under dir
-  - getProbeLabels(file)... get the labels(On,MW, etc) based on behavior file
-  - getLabelFiles(dir)... get .txt files under dir
-  - constructPath(parent, child) ... construct path that is parent/child
-
-- AMICA_Wrapper_files
-
-  Run AMICA for each files in a directory
-- chan_loc.xyz
-
-  Channel location file for eeglab
-- convert_location_mat2eeglab
-
-  You don't have to run this. This creates chan_loc.xyz(above)
-- epoch_w_labels
-
-  Script to create eeglab dataset that is epoched based on the labels 
-  (On task, Mind Wandeirng, Mind Blanking) and save them to folders accordingly.
-
-  ! Each Epochs have to be labels beforehand. 
-- getFreqValues
-  
-  Scripts to save the values of the power spectrum
-  
-  DEVELOPPING...
-- interpolate_loop.m
-
-  1. Remove bad epochs --> Remove bad channels, both using voltage threshold. For bad epochs, I also have threshold for number of bad channels. If an epoch has more than threshold bas channels, the script reject that epoch.
-  2. interpolate removed channels --> average reference --> remove the channels again
-
-- label_epoch.m
-  
-  Script to label epochs based on the labels that are made with label2txt
-
-- label2txt.m
-  
-  Based on behavior data, construct text file that is available to eeglab to label epochs
-
-- plot_freq_loop.m
-  
-   loop to plot frequency decomposition 
- Create a plot/ppt that contains 
- Before Proebe Cond1 Cond2 Cond3 
- After Probe   Cond1 Cond2 Cond3
- (Create 6 plots in 1 figure)
-
-- spm2eeglab.m
-
-  Import spm data to eeglab
-  ! It only converts the data and channel location (including epochs but not the labels of epochs)
-  ! You need to have .xyz file in order to do the loation convertion
-
-- Features Dimension: (conds,channels,freqneucy bins,time bins)
 
