@@ -1,7 +1,8 @@
 # Behavior
 Functions for behavioral analysis 
-
 Information about the data index is at the bottom
+
+## Scripts
 - behavior_overview
 
   Plot what kind of events there were during 20 seconds before the probes. The trials go from left to right, top to bottom.

@@ -21,176 +21,6 @@ from sklearn.model_selection import GridSearchCV
 
 
 
-def tune(X_train, y_train, scoring):  
-    # Number of trees in random forest
-    n_estimators = [int(x) for x in np.linspace(start = 200, stop = 2000, num = 10)]
-    # Number of features to consider at every split
-    max_features = ['auto', 'sqrt']
-    # Maximum number of levels in tree
-    max_depth = [int(x) for x in np.linspace(10, 110, num = 11)]
-    max_depth.append(None)
-    # Minimum number of samples required to split a node
-    min_samples_split = [2, 5, 10]
-    # Minimum number of samples required at each leaf node
-    min_samples_leaf = [1, 2, 4]
-    # Method of selecting samples for training each tree
-    bootstrap = [True, False]
-
-    # Create the random grid
-    random_grid = {'n_estimators': n_estimators,
-               'max_features': max_features,
-               'max_depth': max_depth,
-               'min_samples_split': min_samples_split,
-               'min_samples_leaf': min_samples_leaf,
-               'bootstrap': bootstrap}
-
-    fracNeg = len(y_train[y_train == 0])/float(len(y_train))
-    weight = (1-fracNeg)/float(fracNeg) 
-    class_weight = {1:1, 0:weight}
-
-    rf = RandomForestClassifier(class_weight=class_weight, criterion="entropy")
-    # automatically does stratified kfold
-    rf_random = RandomizedSearchCV(estimator = rf, param_distributions = random_grid, n_iter = 100, cv = 5, verbose=2, random_state=42, n_jobs = -1, scoring=scoring)
-    rf_random.fit(X_train, y_train)
-    return rf_random.best_params_, rf_random.best_score_
-
-class ScoreSummary(object):
-    """Class to store the training scores and testing scores"""
-    def __init__(self, dimensions =[]):#training_list=[],test_list=[]
-        super(ScoreSummary,self).__init__()
-        self.training_list = []
-        self.test_list     = []
-        self.dimensions    = dimensions 
-        self.shape         = None # Not working now
-
-        # Sudo private values
-        self.save_plot_bool= False
-        self.save_plot_path= None
-        self.save_vars_bool=False
-        self.save_mean = True        
-        self.save_std  = True
-        self.t_score   = True
-        self.save_vars_path=None
-    def append(self,score_like):
-        '''append the training_list and test_list
-            input: score_like: it can be Score Summary or list(can be multilayer)
-            output: None. It changes the self.training_list and self.test_list
-        '''
-        if isinstance(score_like,ScoreSummary):
-            append_training,append_test = score_like.getTuple()
-            self.training_list.append(append_training)
-            self.test_list.append(append_test)
-            self.dimensions+=(score_like.dimensions)
-            self.shape = np.array(self.test_list).shape
-        else:
-            append_training,append_test = score_like
-            self.training_list.append(append_training)
-            self.test_list.append(append_test)
-            self.shape = np.array(self.test_list).shape
-
-    def getTuple(self):
-        '''
-        helper method to return trainng list and test list as numpy array
-        '''
-        return np.array(self.training_list),np.array(self.test_list)
-    def std(self,axis = None):
-        self.training_std = np.std(self.training_list,axis = axis)
-        self.test_std     = np.std(self.test_list,axis = axis)
-        return self.training_std, self.test_std
-    def mean(self,axis = None):
-        self.training_mean = np.mean
-        self.test_mean     = np.mean(self.training_list)
-    def report(self,means,stds):
-        '''under development'''
-        return self
-        
-    def plot(self,x,subplot_dims=[2,3],across_dim=None,clf_dim=None,suptitle=None,titles = '',x_label='Across Dim',y_label='Accuracy',plt_func=plt.errorbar):
-        '''It plots the accuracy with standard deviation
-            Currently, this function is probably not very flexible. It only allows 2,3 dimensions of the data. It needs to be generalized somehow 
-            in the future, which might not come.
-
-            Ahhh, I made this function too strict... It's really hard to grasp what I need to do and I made this funciton gesus. 
-        '''
-           # Mean
-        if suptitle==None:
-            suptitle=str(self.shape)
-        if across_dim==None:
-            get_clf = lambda array,i: array[i]
-        else:
-            get_clf = lambda array,i:array[:,i]
-
-        axis = tuple(dim for dim in range(len(self.shape)) if (dim != across_dim and dim != clf_dim))
-        training_mean = np.mean(self.training_list,axis = axis)
-        test_mean     = np.mean(self.test_list,axis = axis)
-
-        # std
-        training_std = np.std(self.training_list,axis = axis)
-        test_std     = np.std(self.test_list,axis = axis)
-
-        # Save the variales
-        self.save_vars(suptitle,titles,axis)
-
-        # Plot the figures
-        num_figures = subplot_dims[0]*subplot_dims[1]
-
-        plt.figure(figsize=(15,10))
-        plt.suptitle(suptitle)
-        for i in range(self.shape[clf_dim]):
-            plt.subplot(*subplot_dims,i%num_figures+1)
-            plt_func(x,get_clf(training_mean,i),get_clf(training_std,i),label='Training(with std)',fmt='-o')
-            plt_func(x,get_clf(test_mean,i),get_clf(test_std,i),label='Test(with std)',fmt='-o')
-            plt.title(titles[i])
-            plt.legend()
-            plt.xlabel(x_label)
-            plt.ylabel(y_label)
-            plt.ylim((0,1.05))
-            if (i % num_figures) == num_figures-1: # Create new figure if it exceeds subplot dimensions
-                self.save_plot(suptitle+'-'+titles[i-num_figures+1]+'-'+titles[i])
-                plt.close()
-                plt.figure(figsize=(15,10))
-                plt.suptitle(suptitle)
-        plt.close()
-
-    def save_plot_init(self,save_plot_path):
-        '''make the self.plot save the plot to save_plot_path'''
-        self.save_plot_bool = True
-        self.save_plot_path = save_plot_path
-    def save_plot(self, title):
-        '''helper function called in self.plot(). It saves the plot'''
-        if self.save_plot_bool:
-            with cd(self.save_plot_path):
-                plt.savefig(title+'.png')
-    def save_vars_init(self,save_vars_path):
-        '''make the self.plot save the variables(test_mean) to save_vars_path'''
-        self.save_vars_bool = True
-        self.save_vars_path = save_vars_path
-
-    def save_values(l_words):
-        self.save_mean = 'mean' in l_words
-        self.save_std  = 'std'  in l_words
-        self.t_score   = 't_score' in l_words
-
-    def save_vars(self,suptitle,titles, axis):
-        '''Helper method called in self.plot(). It saves the variables'''
-        if self.save_vars_bool:
-            saving_dic = {}
-            if self.save_std: 
-                test_std     = np.std(self.test_list,axis = axis)
-                saving_dic.update( {titles[i]+'_std':  test_std[:,i] for i in range(len(titles))})
-            if self.save_mean:
-                test_mean     = np.mean(self.test_list,axis = axis)
-                saving_dic.update({titles[i]+'_mean': test_mean[:,i] for i in range(len(titles))})
-            if self.t_score:
-                shape = np.array(self.test_list).shape
-                if len(axis) == 2:
-                    self.test_list = np.reshape(self.test_list,(shape[0]*shape[1],-1))
-                    shape = self.test_list.shape
-                (t_scores,p_values)  = ttest_rel(self.test_list,np.ones(shape)*0.5,axis = 0)
-                t_scores = t_scores.reshape(t_scores.shape[0],-1)
-                saving_dic.update({titles[i]+'_tscore': t_scores[:,i] for i in range(len(titles))})
-            with cd(self.save_vars_path):
-                savemat(suptitle+'.mat',saving_dic)
-
 
 
 def readScoreValues(file_path, mean_name = 'Linear_mean', std_name = 'Linear_std'):
@@ -199,12 +29,6 @@ def readScoreValues(file_path, mean_name = 'Linear_mean', std_name = 'Linear_std
     std_values  = np.array(io.loadmat(f)[std_name])
 
     return mean_values,std_values
-
-def plotScoreSummary(path0, path1):
-    mean_values0,std_values0 = readScoreValues(path0)
-    mean_values1,std_values1 = readScoreValues(path1)
-
-    return 'whhhhy Japanese people!?!?'
 
 
 class ClfItrFolder(object):
@@ -223,7 +47,10 @@ class ClfItrFolder(object):
 
 
 class acrossDimClassifier(ClfItrFolder):
-    """docstring for acrossDimClassifier"""
+    """ This class is to run classifications as a function of a feature dimension.
+        Currently, you need to have this at the lowest layer of the ClfItrFolders
+        and I thihnk I will not develop upon this version. 
+    """
     def __init__(self, clf, as_func_dim):
         super(ClfItrFolder, self).__init__()
         self.clf = clf
@@ -362,7 +189,7 @@ class clfFolderOpposite(ClfItrFolder):
         return self.score_list
 
 class subSampler(ClfItrFolder):
-    """docstring for subSampler"""
+    """docstring for subSampler0"""
     def __init__(self, clf,num_sub_samples):
         super(ClfItrFolder, self).__init__()
         self.clf = clf
@@ -417,8 +244,149 @@ def errorfill(x,y,error,label=None,label_fill=None,fmt='-o'):
     plt.fill_between(x,y-error,y+error,label=label)
     plt.plot(x,y,'k-')
 
-def gridSearch():
-    pass
+
+
+class ScoreSummary(object):
+    """Class to store the training scores and testing scores"""
+    def __init__(self, dimensions =[]):#training_list=[],test_list=[]
+        super(ScoreSummary,self).__init__()
+        self.training_list = []
+        self.test_list     = []
+        self.dimensions    = dimensions 
+        self.shape         = None # Not working now
+
+        # Sudo private values
+        self.save_plot_bool= False
+        self.save_plot_path= None
+        self.save_vars_bool=False
+        self.save_mean = True        
+        self.save_std  = True
+        self.t_score   = True
+        self.save_vars_path=None
+    def append(self,score_like):
+        '''append the training_list and test_list
+            input: score_like: it can be Score Summary or list(can be multilayer)
+            output: None. It changes the self.training_list and self.test_list
+        '''
+        if isinstance(score_like,ScoreSummary):
+            append_training,append_test = score_like.getTuple()
+            self.training_list.append(append_training)
+            self.test_list.append(append_test)
+            self.dimensions+=(score_like.dimensions)
+            self.shape = np.array(self.test_list).shape
+        else:
+            append_training,append_test = score_like
+            self.training_list.append(append_training)
+            self.test_list.append(append_test)
+            self.shape = np.array(self.test_list).shape
+
+    def getTuple(self):
+        '''
+        helper method to return trainng list and test list as numpy array
+        '''
+        return np.array(self.training_list),np.array(self.test_list)
+    def std(self,axis = None):
+        self.training_std = np.std(self.training_list,axis = axis)
+        self.test_std     = np.std(self.test_list,axis = axis)
+        return self.training_std, self.test_std
+    def mean(self,axis = None):
+        self.training_mean = np.mean
+        self.test_mean     = np.mean(self.training_list)
+
+        
+    def plot(self,x,subplot_dims=[2,3],across_dim=None,clf_dim=None,suptitle=None,titles = '',x_label='Across Dim',y_label='Accuracy',plt_func=plt.errorbar):
+        '''It plots the accuracy with standard deviation
+            Currently, this function is probably not very flexible. It only allows 2,3 dimensions of the data. It needs to be generalized somehow 
+            in the future, which might not come.
+
+            Ahhh, I made this function too strict... It's really hard to grasp what I need to do and I made this funciton gesus. 
+        '''
+           # Mean
+        if suptitle==None:
+            suptitle=str(self.shape)
+        if across_dim==None:
+            get_clf = lambda array,i: array[i]
+        else:
+            get_clf = lambda array,i:array[:,i]
+
+        axis = tuple(dim for dim in range(len(self.shape)) if (dim != across_dim and dim != clf_dim))
+        training_mean = np.mean(self.training_list,axis = axis)
+        test_mean     = np.mean(self.test_list,axis = axis)
+
+        # std
+        training_std = np.std(self.training_list,axis = axis)
+        test_std     = np.std(self.test_list,axis = axis)
+
+        # Save the variales
+        self.save_vars(suptitle,titles,axis)
+
+        # Plot the figures
+        num_figures = subplot_dims[0]*subplot_dims[1]
+
+        plt.figure(figsize=(15,10))
+        plt.suptitle(suptitle)
+        for i in range(self.shape[clf_dim]):
+            plt.subplot(*subplot_dims,i%num_figures+1)
+            plt_func(x,get_clf(training_mean,i),get_clf(training_std,i),label='Training(with std)',fmt='-o')
+            plt_func(x,get_clf(test_mean,i),get_clf(test_std,i),label='Test(with std)',fmt='-o')
+            plt.title(titles[i])
+            plt.legend()
+            plt.xlabel(x_label)
+            plt.ylabel(y_label)
+            plt.ylim((0,1.05))
+            if (i % num_figures) == num_figures-1: # Create new figure if it exceeds subplot dimensions
+                self.save_plot(suptitle+'-'+titles[i-num_figures+1]+'-'+titles[i])
+                plt.close()
+                plt.figure(figsize=(15,10))
+                plt.suptitle(suptitle)
+        plt.close()
+
+    def save_plot_init(self,save_plot_path):
+        '''make the self.plot save the plot to save_plot_path'''
+        self.save_plot_bool = True
+        self.save_plot_path = save_plot_path
+    def save_plot(self, title):
+        '''helper function called in self.plot(). It saves the plot'''
+        if self.save_plot_bool:
+            with cd(self.save_plot_path):
+                plt.savefig(title+'.png')
+    def save_vars_init(self,save_vars_path):
+        '''make the self.plot save the variables(test_mean) to save_vars_path
+            'std' is currently not done now. 
+        '''
+        self.save_vars_bool = True
+        self.save_vars_path = save_vars_path
+
+    def save_values(self,l_words):
+        '''
+            I should probably depreciate this. 
+        '''
+
+        self.save_mean = 'mean' in l_words
+        self.save_std  = 'std'  in l_words
+        self.t_score   = 't_score' in l_words
+
+    def save_vars(self,suptitle,titles, axis):
+        '''Helper method called in self.plot(). It saves the variables'''
+        if self.save_vars_bool:
+            saving_dic = {}
+            if self.save_std: 
+                test_std     = np.std(self.test_list,axis = axis)
+                saving_dic.update( {titles[i]+'_std':  test_std[:,i] for i in range(len(titles))})
+            if self.save_mean:
+                test_mean     = np.mean(self.test_list,axis = axis)
+                saving_dic.update({titles[i]+'_mean': test_mean[:,i] for i in range(len(titles))})
+            if self.t_score:
+                shape = np.array(self.test_list).shape
+                if len(axis) == 2:
+                    self.test_list = np.reshape(self.test_list,(shape[0]*shape[1],-1))
+                    shape = self.test_list.shape
+                (t_scores,p_values)  = ttest_rel(self.test_list,np.ones(shape)*0.5,axis = 0)
+                t_scores = t_scores.reshape(t_scores.shape[0],-1)
+                saving_dic.update({titles[i]+'_tscore': t_scores[:,i] for i in range(len(titles))})
+            with cd(self.save_vars_path):
+                savemat(suptitle+'.mat',saving_dic)
+
 
 def main():
     ppt = str(sys.argv[1])
@@ -674,4 +642,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
