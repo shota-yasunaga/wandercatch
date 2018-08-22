@@ -16,21 +16,27 @@ from sklearn.decomposition import PCA
 # Related to Feature Extractions #
 ##################################
 
-def getRawValues(file_path):
-    f = open(file_path,'rb')
-    data = np.array(io.loadmat(f)['data'])
-    f.close()
-    return data
+
+
 def getGeneralValues(file_path,data_name):
+    '''
+    Input:
+        file_path: path to the file 
+        data_name: the name of the field you are interested 
+    Output: 
+        features
+    '''
+
     f = open(file_path,'rb')
     features = np.array(io.loadmat(f)[data_name])
     f.close()
     return features
 
+
+def getRawValues(file_path):
+    return getGeneralValues(file_path,'data')
+
 def getFreqValuesVec(file_path):
-    '''
-    data 
-    '''
     f = open(file_path,'rb')
     freqValues = np.array(io.loadmat(f)['spectra'])
     freqVec   = np.array(io.loadmat(f)['freqVec'])
@@ -39,21 +45,39 @@ def getFreqValuesVec(file_path):
 
 def readOneFeatures(file_path,max_freq = -1):
     '''
-
+    Input:
+        file_path: path to the feature file 
+        max_freq : the frequency of interest (maximum)
+    Output: 
+        features and vector that contains frequency
     '''
     f = open(file_path,'rb')
     features = np.array(io.loadmat(f)['features'])
     freqVec   = np.array(io.loadmat(f)['freqVec'])  
-    freqVec = np.array([round(freq[0],1) for freq in freqVec])
+    f.close()
+    # Limit the frequency band
+
+    freqVec = np.array([round(freq[0],1) for freq in freqVec]) 
     end_ind = list(freqVec).index(max_freq)
-    
     features = features[:,:,0:end_ind+1]
     freqVec  = freqVec[0:end_ind+1]
-    f.close()
     return features,freqVec
 
 
 def getSubsampledFeatures(cond0_path,cond1_path,max_freq=-1,num_fold=1,feature_type = 'freq'):
+    '''
+    Input:
+        cond0_path: path to the 1st condition
+        cond1_path: path to the 2nd condition
+        max_freq: frequency limit
+        num_fold: how many times you want ot subsample
+        feature_type: the type of feature. 'freq','raw', or the name of the fields.
+                      It will look at the .mat file and extract 'features' and 'freqVec' for 'freq'
+                                                                'data' for 'raw'
+                                                                feature_type for anything else. 
+
+    Output: generator that yeilds features and labels(0 for cond0, 1 for cond1)
+    '''
     if feature_type == 'freq':
         features0,freqVec = readOneFeatures(cond0_path,max_freq)
         features1,freqVec = readOneFeatures(cond1_path,max_freq)
@@ -74,7 +98,9 @@ def getSubsampledFeatures(cond0_path,cond1_path,max_freq=-1,num_fold=1,feature_t
         yield features,labels
 
 def flatten_features(X):
-    '''Helper function for getPCA'''        
+    '''Helper function for getPCA
+       It simply flattens the features except the first 
+    ''' 
     shape = X.shape
     X = X.reshape(shape[0],-1)
     return X

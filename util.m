@@ -21,6 +21,7 @@ end
 
 
 %% Actual functions called by util
+%TODO: Clean it up
 function filenames = getBehaviorFiles(behavior_path)
     filenames = getFiles(behavior_path);
     filenames = filenames(contains(filenames,'.mat'));
